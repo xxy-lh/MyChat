@@ -6,7 +6,6 @@
 -- ========================================
 -- 用户表
 -- ========================================
-USE TeleChat;
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY COMMENT '用户ID（雪花算法）',

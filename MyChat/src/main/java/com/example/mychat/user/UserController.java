@@ -1,7 +1,6 @@
 package com.example.mychat.user;
 
 import com.example.mychat.infrastructure.web.Result;
-import com.example.mychat.user.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
