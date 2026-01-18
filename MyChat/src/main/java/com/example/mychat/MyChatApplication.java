@@ -2,13 +2,8 @@ package com.example.mychat;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(excludeName = {
-        "org.springframework.boot.data.r2dbc.autoconfigure.R2dbcRepositoriesAutoConfiguration",
-        "org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration"
-})
-@EnableJpaRepositories(basePackages = "com.example.mychat")
+@SpringBootApplication
 public class MyChatApplication {
 
     public static void main(String[] args) {

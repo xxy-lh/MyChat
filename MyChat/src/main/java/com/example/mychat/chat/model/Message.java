@@ -36,7 +36,6 @@ public class Message {
      */
     @Column(name = "sender_id", nullable = false)
     private Long senderId;
-
     /**
      * 接收者ID（用户ID或群组ID）
      */

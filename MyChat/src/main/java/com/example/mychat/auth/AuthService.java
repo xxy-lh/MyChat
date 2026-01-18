@@ -46,34 +46,44 @@ public class AuthService {
      * 用户登录
      */
     public AuthResponse login(LoginRequest request) {
+        // 先检查用户是否存在
+        if (!userService.existsByPhone(request.getPhone())) {
+            throw new BusinessException("该手机号尚未注册，请先注册账号", HttpStatus.NOT_FOUND);
+        }
+
         // 认证用户
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getPhone(),
-                        request.getPassword()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getPhone(),
+                            request.getPassword()));
 
-        User user = (User) authentication.getPrincipal();
-        Long userId = Objects.requireNonNull(user.getId(), "用户ID不能为空");
-        String phone = Objects.requireNonNull(user.getPhone(), "手机号不能为空");
+            User user = (User) authentication.getPrincipal();
+            Long userId = Objects.requireNonNull(user.getId(), "用户ID不能为空");
+            String phone = Objects.requireNonNull(user.getPhone(), "手机号不能为空");
 
-        // 生成令牌
-        String accessToken = jwtTokenProvider.generateAccessToken(userId, phone);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(userId, phone);
+            // 生成令牌
+            String accessToken = jwtTokenProvider.generateAccessToken(userId, phone);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(userId, phone);
 
-        // 将 Token 存入 Redis 白名单（用于后续踢下线功能）
-        saveTokenToWhitelist(userId, accessToken);
+            // 将 Token 存入 Redis 白名单（用于后续踢下线功能）
+            saveTokenToWhitelist(userId, accessToken);
 
-        // 更新在线状态
-        userService.updateOnlineStatus(userId, User.UserStatus.ONLINE);
+            // 更新在线状态
+            userService.updateOnlineStatus(userId, User.UserStatus.ONLINE);
 
-        log.info("用户 {} 登录成功", phone);
+            log.info("用户 {} 登录成功", phone);
 
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .expiresIn(jwtTokenProvider.getAccessTokenExpirationInSeconds())
-                .user(UserDTO.fromEntity(user))
-                .build();
+            return AuthResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .expiresIn(jwtTokenProvider.getAccessTokenExpirationInSeconds())
+                    .user(UserDTO.fromEntity(user))
+                    .build();
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            // 密码错误
+            throw new BusinessException("手机号或密码错误，请检查后重试", HttpStatus.UNAUTHORIZED);
+        }
     }
 
     /**
