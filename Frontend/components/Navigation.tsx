@@ -12,6 +12,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView }) =>
     { id: 'chat', icon: 'chat', label: '消息' },
     { id: 'contacts', icon: 'group', label: '联系人' },
     { id: 'media', icon: 'explore', label: '发现' },
+    { id: 'security', icon: 'security', label: '安全与隐私' },
     { id: 'settings', icon: 'settings', label: '设置' },
   ];
 
@@ -30,26 +31,24 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView }) =>
             <button
               key={item.id}
               onClick={() => onChangeView(item.id)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full ${
-                currentView === item.id
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full ${currentView === item.id
                   ? 'bg-primary/10 dark:bg-[#232f48] text-primary dark:text-white'
                   : 'text-slate-500 hover:bg-slate-100 dark:text-[#92a4c9] dark:hover:bg-[#232f48]'
-              }`}
+                }`}
             >
               <span className={`material-symbols-outlined text-xl ${currentView === item.id ? 'fill-1' : ''}`}>{item.icon}</span>
               <p className="text-sm font-medium leading-normal">{item.label}</p>
             </button>
           ))}
-          <button 
+          <button
             onClick={() => onChangeView('calls')}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full ${
-                currentView === 'calls'
-                  ? 'bg-primary/10 dark:bg-[#232f48] text-primary dark:text-white'
-                  : 'text-slate-500 hover:bg-slate-100 dark:text-[#92a4c9] dark:hover:bg-[#232f48]'
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full ${currentView === 'calls'
+                ? 'bg-primary/10 dark:bg-[#232f48] text-primary dark:text-white'
+                : 'text-slate-500 hover:bg-slate-100 dark:text-[#92a4c9] dark:hover:bg-[#232f48]'
               }`}
           >
-             <span className={`material-symbols-outlined text-xl ${currentView === 'calls' ? 'fill-1' : ''}`}>call</span>
-             <p className="text-sm font-medium leading-normal">通话</p>
+            <span className={`material-symbols-outlined text-xl ${currentView === 'calls' ? 'fill-1' : ''}`}>call</span>
+            <p className="text-sm font-medium leading-normal">通话</p>
           </button>
         </div>
       </div>

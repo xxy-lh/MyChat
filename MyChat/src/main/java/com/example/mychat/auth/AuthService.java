@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 认证服务
  * 处理登录、注册、令牌刷新等业务逻辑
+ * 使用用户名进行认证
  */
 @Slf4j
 @Service
@@ -44,27 +45,30 @@ public class AuthService {
 
     /**
      * 用户登录
+     * 使用用户名 + 密码认证
      */
     public AuthResponse login(LoginRequest request) {
+        String username = request.getUsername();
+
         // 先检查用户是否存在
-        if (!userService.existsByPhone(request.getPhone())) {
-            throw new BusinessException("该手机号尚未注册，请先注册账号", HttpStatus.NOT_FOUND);
+        if (!userService.existsByName(username)) {
+            throw new BusinessException("该用户名尚未注册，请先注册账号", HttpStatus.NOT_FOUND);
         }
 
         // 认证用户
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getPhone(),
+                            username,
                             request.getPassword()));
 
             User user = (User) authentication.getPrincipal();
             Long userId = Objects.requireNonNull(user.getId(), "用户ID不能为空");
-            String phone = Objects.requireNonNull(user.getPhone(), "手机号不能为空");
+            String name = Objects.requireNonNull(user.getName(), "用户名不能为空");
 
             // 生成令牌
-            String accessToken = jwtTokenProvider.generateAccessToken(userId, phone);
-            String refreshToken = jwtTokenProvider.generateRefreshToken(userId, phone);
+            String accessToken = jwtTokenProvider.generateAccessToken(userId, name);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(userId, name);
 
             // 将 Token 存入 Redis 白名单（用于后续踢下线功能）
             saveTokenToWhitelist(userId, accessToken);
@@ -72,7 +76,7 @@ public class AuthService {
             // 更新在线状态
             userService.updateOnlineStatus(userId, User.UserStatus.ONLINE);
 
-            log.info("用户 {} 登录成功", phone);
+            log.info("用户 {} 登录成功", name);
 
             return AuthResponse.builder()
                     .accessToken(accessToken)
@@ -82,44 +86,46 @@ public class AuthService {
                     .build();
         } catch (org.springframework.security.authentication.BadCredentialsException e) {
             // 密码错误
-            throw new BusinessException("手机号或密码错误，请检查后重试", HttpStatus.UNAUTHORIZED);
+            throw new BusinessException("用户名或密码错误，请检查后重试", HttpStatus.UNAUTHORIZED);
         }
     }
 
     /**
      * 用户注册
+     * 仅需用户名和密码
      */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
+        String username = request.getUsername();
+
         // 验证密码确认
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new BusinessException("两次输入的密码不一致", HttpStatus.BAD_REQUEST);
         }
 
-        // 检查手机号是否已注册
-        if (userService.existsByPhone(request.getPhone())) {
-            throw new BusinessException("该手机号已注册", HttpStatus.CONFLICT);
+        // 检查用户名是否已注册
+        if (userService.existsByName(username)) {
+            throw new BusinessException("该用户名已被注册", HttpStatus.CONFLICT);
         }
 
-        // 创建用户
+        // 创建用户（用户名同时作为 name 和 handle）
         User user = User.builder()
-                .phone(request.getPhone())
+                .name(username)
+                .handle("@" + username) // 用户名作为 handle
                 .password(passwordEncoder.encode(request.getPassword()))
-                .name(request.getName())
-                .handle("@user_" + System.currentTimeMillis() % 1000000) // 生成临时用户名
                 .status(User.UserStatus.ONLINE)
                 .build();
 
         user = userRepository.save(user);
 
         // 生成令牌
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getPhone());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId(), user.getPhone());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getName());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId(), user.getName());
 
         // 将 Token 存入 Redis 白名单
         saveTokenToWhitelist(user.getId(), accessToken);
 
-        log.info("用户 {} 注册成功，ID: {}", user.getPhone(), user.getId());
+        log.info("用户 {} 注册成功，ID: {}", user.getName(), user.getId());
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -145,10 +151,10 @@ public class AuthService {
         }
 
         Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
-        String phone = jwtTokenProvider.getPhoneFromToken(refreshToken);
+        String username = jwtTokenProvider.getPhoneFromToken(refreshToken); // 现在存的是用户名
 
         // 生成新的 Access Token
-        String newAccessToken = jwtTokenProvider.generateAccessToken(userId, phone);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(userId, username);
 
         // 更新白名单
         saveTokenToWhitelist(userId, newAccessToken);

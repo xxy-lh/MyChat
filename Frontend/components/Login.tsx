@@ -7,30 +7,60 @@ interface LoginProps {
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [phone, setPhone] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [isRegisterMode, setIsRegisterMode] = useState(false);
-  const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // 验证手机号格式（中国手机号）
-  const isValidPhone = (phone: string) => /^1[3-9]\d{9}$/.test(phone);
+  // 清空所有表单
+  const clearForm = () => {
+    setUsername('');
+    setPassword('');
+    setConfirmPassword('');
+    setError('');
+    setSuccessMessage('');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  };
+
+  // 切换登录/注册模式
+  const toggleMode = () => {
+    clearForm();
+    setIsRegisterMode(!isRegisterMode);
+  };
+
+  // 跳转到注册（带提示）
+  const goToRegister = () => {
+    clearForm();
+    setIsRegisterMode(true);
+  };
+
+  // 跳转到登录（注册成功后）
+  const goToLogin = (message?: string) => {
+    clearForm();
+    setIsRegisterMode(false);
+    if (message) {
+      setSuccessMessage(message);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
 
     // 前端验证
-    if (!phone.trim()) {
-      setError('请输入手机号码');
+    if (!username.trim()) {
+      setError('请输入用户名');
       return;
     }
-    if (!isValidPhone(phone.trim())) {
-      setError('请输入有效的手机号（以1开头，11位数字）');
+    if (username.trim().length < 2 || username.trim().length > 20) {
+      setError('用户名长度必须在2-20位之间');
       return;
     }
     if (!password.trim()) {
@@ -42,14 +72,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       return;
     }
     if (isRegisterMode) {
-      if (!name.trim()) {
-        setError('请输入用户名');
-        return;
-      }
-      if (name.trim().length < 2 || name.trim().length > 20) {
-        setError('用户名长度必须在2-20位之间');
-        return;
-      }
       if (!confirmPassword.trim()) {
         setError('请确认密码');
         return;
@@ -66,13 +88,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       const endpoint = isRegisterMode ? '/auth/register' : '/auth/login';
       const body = isRegisterMode
         ? {
-          phone: phone.trim(),
+          username: username.trim(),
           password,
-          confirmPassword,
-          name: name.trim()
+          confirmPassword
         }
         : {
-          phone: phone.trim(),
+          username: username.trim(),
           password
         };
 
@@ -87,19 +108,31 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       const result = await response.json();
 
       if (response.ok && result.code === 200) {
-        // 登录/注册成功
-        if (result.data?.accessToken) {
-          localStorage.setItem('accessToken', result.data.accessToken);
-          localStorage.setItem('refreshToken', result.data.refreshToken || '');
-          localStorage.setItem('userId', result.data.userId?.toString() || '');
-          if (result.data.user) {
-            localStorage.setItem('user', JSON.stringify(result.data.user));
+        if (isRegisterMode) {
+          // 注册成功 - 跳转到登录界面
+          goToLogin('🎉 注册成功！请使用您的用户名登录');
+        } else {
+          // 登录成功 - 保存 token 并进入主界面
+          if (result.data?.accessToken) {
+            localStorage.setItem('accessToken', result.data.accessToken);
+            localStorage.setItem('refreshToken', result.data.refreshToken || '');
+            localStorage.setItem('userId', result.data.user?.id?.toString() || '');
+            if (result.data.user) {
+              localStorage.setItem('user', JSON.stringify(result.data.user));
+            }
           }
+          onLogin();
         }
-        onLogin();
       } else {
-        // 登录/注册失败 - 显示后端返回的具体错误信息
-        setError(result.message || (isRegisterMode ? '注册失败，请重试' : '登录失败，请检查手机号和密码'));
+        // 登录/注册失败
+        const errorMessage = result.message || (isRegisterMode ? '注册失败，请重试' : '登录失败');
+
+        // 如果是"该用户名尚未注册"，提供引导
+        if (!isRegisterMode && errorMessage.includes('尚未注册')) {
+          setError('该用户名尚未注册');
+        } else {
+          setError(errorMessage);
+        }
       }
     } catch (err) {
       console.error('Login/Register error:', err);
@@ -109,11 +142,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     }
   };
 
-  const toggleMode = () => {
-    setIsRegisterMode(!isRegisterMode);
-    setError('');
-    setConfirmPassword('');
-  };
+  // 检查是否显示"去注册"引导按钮
+  const showRegisterGuide = !isRegisterMode && error.includes('尚未注册');
 
   return (
     <div className="bg-background-light font-display h-screen flex items-center justify-center p-4 relative overflow-hidden text-gray-800">
@@ -121,7 +151,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <div className="absolute -top-[10%] -left-[10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]"></div>
         <div className="absolute -bottom-[10%] -right-[10%] w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-[100px]"></div>
       </div>
-      <main className="w-full max-w-[960px] min-h-[650px] bg-white rounded-2xl shadow-2xl flex overflow-hidden z-10 relative ring-1 ring-black/5">
+      <main className="w-full max-w-[960px] min-h-[600px] bg-white rounded-2xl shadow-2xl flex overflow-hidden z-10 relative ring-1 ring-black/5">
         <div className="hidden md:flex w-5/12 bg-surface-dark relative flex-col justify-between p-10 text-white overflow-hidden">
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)", backgroundSize: "24px 24px" }}></div>
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/30 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
@@ -171,47 +201,50 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               </p>
             </div>
 
+            {/* 成功提示 */}
+            {successMessage && (
+              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-green-600 text-sm">
+                <span className="material-symbols-outlined text-lg">check_circle</span>
+                {successMessage}
+              </div>
+            )}
+
             {/* 错误提示 */}
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-600 text-sm">
-                <span className="material-symbols-outlined text-lg">error</span>
-                {error}
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">error</span>
+                  {error}
+                </div>
+                {/* 未注册时显示引导按钮 */}
+                {showRegisterGuide && (
+                  <button
+                    type="button"
+                    className="mt-2 w-full py-2 bg-red-100 hover:bg-red-200 text-red-700 font-medium rounded-lg transition-colors flex items-center justify-center gap-1"
+                    onClick={goToRegister}
+                  >
+                    <span className="material-symbols-outlined text-lg">person_add</span>
+                    立即注册
+                  </button>
+                )}
               </div>
             )}
 
             <form className="space-y-4" onSubmit={handleSubmit}>
-              {/* 注册时显示用户名输入 */}
-              {isRegisterMode && (
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">用户名</label>
-                  <div className="relative rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary transition-shadow">
-                    <input
-                      className="block w-full border-0 bg-transparent py-2.5 pl-3 pr-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 rounded-lg"
-                      name="name"
-                      placeholder="输入用户名（2-20位）"
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
-
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">手机号码</label>
-                <div className="relative flex rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary transition-shadow">
-                  <div className="flex items-center gap-1 pl-3 pr-2 border-r border-gray-200 bg-gray-50 rounded-l-lg">
-                    <span className="text-sm font-medium text-gray-600">+86</span>
-                    <span className="material-symbols-outlined text-base text-gray-400">expand_more</span>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">用户名</label>
+                <div className="relative rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary transition-shadow">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="material-symbols-outlined text-gray-400 text-xl">person</span>
                   </div>
                   <input
-                    className="block w-full border-0 bg-transparent py-2.5 pl-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                    name="phone"
-                    placeholder="输入11位手机号"
-                    type="tel"
-                    maxLength={11}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                    className="block w-full border-0 bg-transparent py-2.5 pl-10 pr-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 rounded-lg"
+                    name="username"
+                    placeholder="输入用户名（2-20位）"
+                    type="text"
+                    maxLength={20}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
               </div>
@@ -219,13 +252,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="block text-sm font-semibold text-gray-700">密码</label>
-                  {!isRegisterMode && (
-                    <a className="text-xs font-medium text-primary hover:text-blue-700 transition-colors" href="#">验证码登录</a>
-                  )}
                 </div>
                 <div className="relative rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary transition-shadow">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="material-symbols-outlined text-gray-400 text-xl">lock</span>
+                  </div>
                   <input
-                    className="block w-full border-0 bg-transparent py-2.5 pl-3 pr-10 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 rounded-lg"
+                    className="block w-full border-0 bg-transparent py-2.5 pl-10 pr-10 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 rounded-lg"
                     name="password"
                     placeholder="输入密码（6-32位）"
                     type={showPassword ? "text" : "password"}
@@ -249,8 +282,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">确认密码</label>
                   <div className="relative rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary transition-shadow">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="material-symbols-outlined text-gray-400 text-xl">lock</span>
+                    </div>
                     <input
-                      className="block w-full border-0 bg-transparent py-2.5 pl-3 pr-10 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 rounded-lg"
+                      className="block w-full border-0 bg-transparent py-2.5 pl-10 pr-10 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 rounded-lg"
                       name="confirmPassword"
                       placeholder="再次输入密码"
                       type={showConfirmPassword ? "text" : "password"}
@@ -295,22 +331,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 </button>
               </div>
             </form>
-            <div className="relative mt-6">
-              <div aria-hidden="true" className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
-              </div>
-              <div className="relative flex justify-center">
-                <span className="bg-white px-2 text-xs text-gray-400">其他方式登录</span>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-center gap-4">
-              <button className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors">
-                <span className="material-symbols-outlined text-gray-500 text-xl">mail</span>
-              </button>
-              <button className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors">
-                <span className="material-symbols-outlined text-gray-500 text-xl">fingerprint</span>
-              </button>
-            </div>
           </div>
         </div>
       </main>

@@ -22,6 +22,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByPhone(String phone);
 
     /**
+     * 根据用户名（name字段）查找用户
+     */
+    Optional<User> findByName(String name);
+
+    /**
+     * 检查用户名是否存在
+     */
+    boolean existsByName(String name);
+
+    /**
      * 根据用户名查找用户
      */
     Optional<User> findByHandle(String handle);

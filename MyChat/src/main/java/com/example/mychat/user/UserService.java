@@ -34,12 +34,13 @@ public class UserService implements UserDetailsService {
 
     /**
      * 加载用户详情（Spring Security 使用）
+     * 现在使用用户名（name字段）进行认证
      */
     @Override
     @NonNull
-    public UserDetails loadUserByUsername(@NonNull String phone) throws UsernameNotFoundException {
-        return userRepository.findByPhone(phone)
-                .orElseThrow(() -> new UsernameNotFoundException("用户不存在: " + phone));
+    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
+        return userRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("用户不存在: " + username));
     }
 
     /**
@@ -50,10 +51,24 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * 根据用户名获取用户
+     */
+    public Optional<User> findByName(String name) {
+        return userRepository.findByName(name);
+    }
+
+    /**
      * 根据手机号获取用户
      */
     public Optional<User> findByPhone(String phone) {
         return userRepository.findByPhone(phone);
+    }
+
+    /**
+     * 检查用户名是否已注册
+     */
+    public boolean existsByName(String name) {
+        return userRepository.existsByName(name);
     }
 
     /**

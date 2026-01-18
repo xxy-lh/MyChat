@@ -50,4 +50,4 @@ export interface MediaItem {
   location?: string;
 }
 
-export type ViewState = 'chat' | 'contacts' | 'media' | 'settings' | 'calls';
+export type ViewState = 'chat' | 'contacts' | 'media' | 'settings' | 'calls' | 'security';
