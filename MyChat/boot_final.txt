@@ -1,0 +1,211 @@
+﻿> Task :compileJava UP-TO-DATE
+> Task :processResources
+> Task :classes
+> Task :resolveMainClassName
+
+> Task :bootRun
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.1)
+
+2026-01-18T12:00:37.554+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Starting MyChatApplication using Java 21.0.7 with PID 23100 (D:\MyTelegram\MyChat\build\classes\java\main started by Lenovo in D:\MyTelegram\MyChat)
+2026-01-18T12:00:37.556+08:00 DEBUG 23100 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-18T12:00:37.557+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-01-18T12:00:37.609+08:00  INFO 23100 --- [MyChat] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-18T12:00:37.609+08:00  INFO 23100 --- [MyChat] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-18T12:00:38.567+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-18T12:00:38.568+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-18T12:00:38.811+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 229 ms. Found 3 JPA repository interfaces.
+2026-01-18T12:00:38.870+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-18T12:00:38.873+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-18T12:00:38.916+08:00  INFO 23100 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.chat.repository.ChatSessionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-18T12:00:38.916+08:00  INFO 23100 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.chat.repository.MessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-18T12:00:38.918+08:00  INFO 23100 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.user.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-18T12:00:38.919+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28 ms. Found 0 Redis repository interfaces.
+2026-01-18T12:00:40.521+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-01-18T12:00:40.544+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-18T12:00:40.545+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-18T12:00:40.654+08:00  INFO 23100 --- [MyChat] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3044 ms
+2026-01-18T12:00:41.089+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-18T12:00:41.277+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@32047acc
+2026-01-18T12:00:41.279+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-18T12:00:41.336+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://localhost:3306/TeleChat?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true (MySQL 8.0)
+2026-01-18T12:00:41.452+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema `TeleChat`: 3
+2026-01-18T12:00:41.478+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.f.core.internal.command.DbMigrate      : Migrating schema `TeleChat` to version "4 - fix event publication columns"
+2026-01-18T12:00:41.752+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.f.core.internal.command.DbMigrate      : Successfully applied 1 migration to schema `TeleChat`, now at version v4 (execution time 00:00.228s)
+2026-01-18T12:00:41.879+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-18T12:00:41.973+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-01-18T12:00:42.582+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-18T12:00:42.659+08:00  WARN 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-18T12:00:42.680+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/TeleChat?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: TeleChat/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-18T12:00:44.101+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-18T12:00:44.114+08:00  INFO 23100 --- [MyChat] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-18T12:00:44.288+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-18T12:00:46.051+08:00 DEBUG 23100 --- [MyChat] [  restartedMain] c.e.m.i.s.JwtAuthenticationFilter        : Filter 'jwtAuthenticationFilter' configured for use
+2026-01-18T12:00:46.477+08:00  INFO 23100 --- [MyChat] [  restartedMain] c.e.m.chat.socket.MessageBrokerService   : 已订阅 Redis 消息主题: chat.topic
+2026-01-18T12:00:46.558+08:00  WARN 23100 --- [MyChat] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-18T12:00:46.597+08:00  INFO 23100 --- [MyChat] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userService
+2026-01-18T12:00:48.290+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-01-18T12:00:48.291+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3cd5c5c8]]
+2026-01-18T12:00:48.294+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-01-18T12:00:48.314+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-01-18T12:00:49.065+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Started MyChatApplication in 12.025 seconds (process running for 12.697)
+╔════════════════════════════════════════════╗
+║   Telegram Chat Backend Started!           ║
+║   Version: 1.0.0                           ║
+║   JDK: 21                                  ║
+║   Spring Boot: 4.0.1                       ║
+╚════════════════════════════════════════════╝
+
+2026-01-18T12:01:48.301+08:00  INFO 23100 --- [MyChat] [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 3, active threads = 1, queued tasks = 2, completed tasks = 0]
+2026-01-18T12:02:52.330+08:00  INFO 23100 --- [MyChat] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 6 class path changes (0 additions, 0 deletions, 6 modifications)
+2026-01-18T12:02:52.339+08:00  INFO 23100 --- [MyChat] [       Thread-1] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-18T12:02:52.355+08:00  INFO 23100 --- [MyChat] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-18T12:02:52.356+08:00  INFO 23100 --- [MyChat] [       Thread-1] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-01-18T12:02:52.356+08:00  INFO 23100 --- [MyChat] [       Thread-1] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3cd5c5c8]]
+2026-01-18T12:02:52.357+08:00  INFO 23100 --- [MyChat] [       Thread-1] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-01-18T12:02:52.450+08:00 DEBUG 23100 --- [MyChat] [       Thread-1] org.hibernate.SQL                        : 
+    select
+        djep1_0.id,
+        djep1_0.completion_attempts,
+        djep1_0.completion_date,
+        djep1_0.event_type,
+        djep1_0.last_resubmission_date,
+        djep1_0.listener_id,
+        djep1_0.publication_date,
+        djep1_0.serialized_event,
+        djep1_0.status 
+    from
+        event_publication djep1_0 
+    where
+        djep1_0.completion_date is null 
+    order by
+        djep1_0.publication_date
+2026-01-18T12:02:52.500+08:00  INFO 23100 --- [MyChat] [       Thread-1] .s.m.e.c.DefaultEventPublicationRegistry : No publications outstanding!
+2026-01-18T12:02:52.528+08:00  INFO 23100 --- [MyChat] [       Thread-1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-18T12:02:52.536+08:00  INFO 23100 --- [MyChat] [       Thread-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-01-18T12:02:52.546+08:00  INFO 23100 --- [MyChat] [       Thread-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.1)
+
+2026-01-18T12:02:52.689+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Starting MyChatApplication using Java 21.0.7 with PID 23100 (D:\MyTelegram\MyChat\build\classes\java\main started by Lenovo in D:\MyTelegram\MyChat)
+2026-01-18T12:02:52.690+08:00 DEBUG 23100 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-18T12:02:52.690+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-01-18T12:02:53.197+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-18T12:02:53.197+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-18T12:02:53.239+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 39 ms. Found 3 JPA repository interfaces.
+2026-01-18T12:02:53.257+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-18T12:02:53.257+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-18T12:02:53.269+08:00  INFO 23100 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.chat.repository.ChatSessionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-18T12:02:53.270+08:00  INFO 23100 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.chat.repository.MessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-18T12:02:53.270+08:00  INFO 23100 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.user.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-18T12:02:53.271+08:00  INFO 23100 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 11 ms. Found 0 Redis repository interfaces.
+2026-01-18T12:02:53.550+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-01-18T12:02:53.551+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-18T12:02:53.551+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-18T12:02:53.633+08:00  INFO 23100 --- [MyChat] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 939 ms
+2026-01-18T12:02:53.737+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-01-18T12:02:53.750+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@450da799
+2026-01-18T12:02:53.750+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-01-18T12:02:53.757+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://localhost:3306/TeleChat?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true (MySQL 8.0)
+2026-01-18T12:02:53.801+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema `TeleChat`: 4
+2026-01-18T12:02:53.805+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema `TeleChat` is up to date. No migration necessary.
+2026-01-18T12:02:53.847+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-18T12:02:53.910+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-18T12:02:53.914+08:00  WARN 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-18T12:02:53.917+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/TeleChat?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: TeleChat/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-18T12:02:54.117+08:00  INFO 23100 --- [MyChat] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-18T12:02:54.119+08:00  INFO 23100 --- [MyChat] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-18T12:02:54.288+08:00 DEBUG 23100 --- [MyChat] [  restartedMain] c.e.m.i.s.JwtAuthenticationFilter        : Filter 'jwtAuthenticationFilter' configured for use
+2026-01-18T12:02:54.558+08:00  INFO 23100 --- [MyChat] [  restartedMain] c.e.m.chat.socket.MessageBrokerService   : 已订阅 Redis 消息主题: chat.topic
+2026-01-18T12:02:54.627+08:00  WARN 23100 --- [MyChat] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-18T12:02:54.656+08:00  INFO 23100 --- [MyChat] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userService
+2026-01-18T12:02:55.490+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-01-18T12:02:55.491+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@1b20a346]]
+2026-01-18T12:02:55.491+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-01-18T12:02:55.495+08:00  INFO 23100 --- [MyChat] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-01-18T12:02:55.558+08:00  INFO 23100 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Started MyChatApplication in 2.917 seconds (process running for 139.191)
+2026-01-18T12:02:55.561+08:00  INFO 23100 --- [MyChat] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+╔════════════════════════════════════════════╗
+║   Telegram Chat Backend Started!           ║
+║   Version: 1.0.0                           ║
+║   JDK: 21                                  ║
+║   Spring Boot: 4.0.1                       ║
+╚════════════════════════════════════════════╝
+
+2026-01-18T12:03:55.494+08:00  INFO 23100 --- [MyChat] [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 3, active threads = 1, queued tasks = 2, completed tasks = 0]
+
+> Task :bootRun FAILED
+
+[Incubating] Problems report is available at: file:///D:/MyTelegram/MyChat/build/reports/problems/problems-report.html
+.\gradlew.bat : 
+所在位置 行:1 字符: 1
++ .\gradlew.bat bootRun 2>&1 | Out-File -
+FilePath boot_final.txt -Encod ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecifi 
+   ed: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeComm 
+   andError
+ 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':bootRun'.
+> Process 'command 'D:\LiuHan Java\Java\j
+dk-21\bin\java.exe'' finished with non-ze
+ro exit value -1
+
+* Try:
+> Run with --stacktrace option to get the
+ stack trace.
+> Run with --info or --debug option to ge
+t more log output.
+> Run with --scan to generate a Build Sca
+n (powered by Develocity).
+> Get more help at https://help.gradle.or
+g.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.2.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 4m 14s
+4 actionable tasks: 3 executed, 1 up-to-date

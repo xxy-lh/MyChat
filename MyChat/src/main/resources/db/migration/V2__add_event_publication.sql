@@ -5,8 +5,6 @@
 -- ========================================
 -- Spring Modulith Event Publication 表
 -- ========================================
-USE TeleChat;
-
 CREATE TABLE IF NOT EXISTS event_publication (
     id VARCHAR(36) PRIMARY KEY,
     listener_id VARCHAR(512) NOT NULL,
