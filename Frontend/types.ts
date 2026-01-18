@@ -8,6 +8,7 @@ export interface User {
   bio?: string;
   location?: string;
   phone?: string;
+  email?: string;
 }
 
 export interface Message {

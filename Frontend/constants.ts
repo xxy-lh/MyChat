@@ -8,6 +8,7 @@ export const CURRENT_USER: User = {
   handle: '@user',
   location: '',
   phone: '',
+  email: '',
   bio: ''
 };
 

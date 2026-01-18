@@ -95,6 +95,10 @@ const SettingsProfile: React.FC = () => {
                                     <input className="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-[#324467] bg-white dark:bg-[#192233] text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder-slate-400" type="tel" defaultValue={CURRENT_USER.phone} />
                                 </label>
                                 <label className="flex flex-col gap-2">
+                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">邮箱地址</span>
+                                    <input className="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-[#324467] bg-white dark:bg-[#192233] text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder-slate-400" type="email" defaultValue={CURRENT_USER.email} placeholder="example@email.com" />
+                                </label>
+                                <label className="flex flex-col gap-2">
                                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">所在地</span>
                                     <input className="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-[#324467] bg-white dark:bg-[#192233] text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder-slate-400" type="text" defaultValue={CURRENT_USER.location} />
                                 </label>
