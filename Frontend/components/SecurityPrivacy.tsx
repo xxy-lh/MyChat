@@ -1,10 +1,138 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 /**
  * 安全与隐私组件
  * 显示浏览历史（图片、视频、链接）和账号绑定设置
  */
 const SecurityPrivacy: React.FC = () => {
+    // 用户信息状态
+    const [userPhone, setUserPhone] = useState<string | null>(null);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+
+    // 绑定表单状态
+    const [phoneInput, setPhoneInput] = useState('');
+    const [emailInput, setEmailInput] = useState('');
+    const [isBindingPhone, setIsBindingPhone] = useState(false);
+    const [isBindingEmail, setIsBindingEmail] = useState(false);
+    const [bindingError, setBindingError] = useState('');
+    const [bindingSuccess, setBindingSuccess] = useState('');
+
+    // 获取当前用户信息
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.data) {
+                        setUserPhone(result.data.phone || null);
+                        setUserEmail(result.data.email || null);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch user info:', error);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
+
+    // 绑定手机号
+    const handleBindPhone = async () => {
+        if (!phoneInput.trim()) {
+            setBindingError('请输入手机号');
+            return;
+        }
+
+        // 简单的手机号验证
+        const phoneRegex = /^1[3-9]\d{9}$/;
+        if (!phoneRegex.test(phoneInput)) {
+            setBindingError('请输入正确的11位手机号');
+            return;
+        }
+
+        setBindingError('');
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/me/phone`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ phone: phoneInput }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.code === 200) {
+                setUserPhone(phoneInput);
+                setIsBindingPhone(false);
+                setPhoneInput('');
+                setBindingSuccess('手机号绑定成功！');
+                setTimeout(() => setBindingSuccess(''), 3000);
+            } else {
+                setBindingError(result.message || '绑定失败，请重试');
+            }
+        } catch (error) {
+            setBindingError('网络错误，请检查连接');
+        }
+    };
+
+    // 绑定邮箱
+    const handleBindEmail = async () => {
+        if (!emailInput.trim()) {
+            setBindingError('请输入邮箱地址');
+            return;
+        }
+
+        // 简单的邮箱验证
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailInput)) {
+            setBindingError('请输入正确的邮箱地址');
+            return;
+        }
+
+        setBindingError('');
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/me/email`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ email: emailInput }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.code === 200) {
+                setUserEmail(result.data?.email || emailInput);
+                setIsBindingEmail(false);
+                setEmailInput('');
+                setBindingSuccess('邮箱绑定成功！');
+                setTimeout(() => setBindingSuccess(''), 3000);
+            } else {
+                setBindingError(result.message || '绑定失败，请重试');
+            }
+        } catch (error) {
+            setBindingError('网络错误，请检查连接');
+        }
+    };
+
     // 模拟的浏览历史数据
     const browsingHistory = {
         images: [
@@ -23,26 +151,6 @@ const SecurityPrivacy: React.FC = () => {
         ],
     };
 
-    // 账号绑定状态
-    const [phoneNumber, setPhoneNumber] = React.useState('');
-    const [email, setEmail] = React.useState('');
-    const [isBindingPhone, setIsBindingPhone] = React.useState(false);
-    const [isBindingEmail, setIsBindingEmail] = React.useState(false);
-
-    const handleBindPhone = () => {
-        if (phoneNumber) {
-            alert(`手机号 ${phoneNumber} 绑定成功！`);
-            setIsBindingPhone(false);
-        }
-    };
-
-    const handleBindEmail = () => {
-        if (email) {
-            alert(`邮箱 ${email} 绑定成功！`);
-            setIsBindingEmail(false);
-        }
-    };
-
     return (
         <div className="flex-1 flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-white relative overflow-hidden">
             {/* Header */}
@@ -57,6 +165,20 @@ const SecurityPrivacy: React.FC = () => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
                 <div className="max-w-4xl mx-auto space-y-8">
+
+                    {/* 成功/错误提示 */}
+                    {bindingSuccess && (
+                        <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-2 text-green-600 dark:text-green-400 text-sm">
+                            <span className="material-symbols-outlined text-lg">check_circle</span>
+                            {bindingSuccess}
+                        </div>
+                    )}
+                    {bindingError && (
+                        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
+                            <span className="material-symbols-outlined text-lg">error</span>
+                            {bindingError}
+                        </div>
+                    )}
 
                     {/* 账号绑定 */}
                     <section className="bg-surface-light dark:bg-[#1e2126] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
@@ -73,7 +195,14 @@ const SecurityPrivacy: React.FC = () => {
                                 </div>
                                 <div>
                                     <div className="font-medium">手机号</div>
-                                    <div className="text-sm text-slate-500">用于登录和找回密码</div>
+                                    {userPhone ? (
+                                        <div className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                                            已绑定: {userPhone}
+                                        </div>
+                                    ) : (
+                                        <div className="text-sm text-slate-500">用于登录和找回密码</div>
+                                    )}
                                 </div>
                             </div>
                             {isBindingPhone ? (
@@ -82,8 +211,9 @@ const SecurityPrivacy: React.FC = () => {
                                         type="tel"
                                         placeholder="输入手机号"
                                         className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-sm w-40"
-                                        value={phoneNumber}
-                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        value={phoneInput}
+                                        onChange={(e) => setPhoneInput(e.target.value)}
+                                        maxLength={11}
                                     />
                                     <button
                                         onClick={handleBindPhone}
@@ -92,7 +222,7 @@ const SecurityPrivacy: React.FC = () => {
                                         确认
                                     </button>
                                     <button
-                                        onClick={() => setIsBindingPhone(false)}
+                                        onClick={() => { setIsBindingPhone(false); setPhoneInput(''); setBindingError(''); }}
                                         className="px-3 py-2 text-slate-500 hover:text-slate-700"
                                     >
                                         取消
@@ -103,7 +233,7 @@ const SecurityPrivacy: React.FC = () => {
                                     onClick={() => setIsBindingPhone(true)}
                                     className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                                 >
-                                    绑定手机号
+                                    {userPhone ? '更换手机号' : '绑定手机号'}
                                 </button>
                             )}
                         </div>
@@ -116,7 +246,14 @@ const SecurityPrivacy: React.FC = () => {
                                 </div>
                                 <div>
                                     <div className="font-medium">邮箱</div>
-                                    <div className="text-sm text-slate-500">用于接收重要通知</div>
+                                    {userEmail ? (
+                                        <div className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                                            已绑定: {userEmail}
+                                        </div>
+                                    ) : (
+                                        <div className="text-sm text-slate-500">用于接收重要通知</div>
+                                    )}
                                 </div>
                             </div>
                             {isBindingEmail ? (
@@ -125,8 +262,8 @@ const SecurityPrivacy: React.FC = () => {
                                         type="email"
                                         placeholder="输入邮箱地址"
                                         className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-sm w-48"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        value={emailInput}
+                                        onChange={(e) => setEmailInput(e.target.value)}
                                     />
                                     <button
                                         onClick={handleBindEmail}
@@ -135,7 +272,7 @@ const SecurityPrivacy: React.FC = () => {
                                         确认
                                     </button>
                                     <button
-                                        onClick={() => setIsBindingEmail(false)}
+                                        onClick={() => { setIsBindingEmail(false); setEmailInput(''); setBindingError(''); }}
                                         className="px-3 py-2 text-slate-500 hover:text-slate-700"
                                     >
                                         取消
@@ -146,7 +283,7 @@ const SecurityPrivacy: React.FC = () => {
                                     onClick={() => setIsBindingEmail(true)}
                                     className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                                 >
-                                    绑定邮箱
+                                    {userEmail ? '更换邮箱' : '绑定邮箱'}
                                 </button>
                             )}
                         </div>

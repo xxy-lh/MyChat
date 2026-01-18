@@ -177,4 +177,52 @@ public class UserService implements UserDetailsService {
                 })
                 .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
     }
+
+    /**
+     * 绑定手机号
+     */
+    @Transactional
+    public UserDTO bindPhone(Long userId, String phone) {
+        // 检查手机号是否已被其他用户使用
+        if (phone != null && !phone.isEmpty()) {
+            userRepository.findByPhone(phone).ifPresent(existingUser -> {
+                if (!existingUser.getId().equals(userId)) {
+                    throw new IllegalArgumentException("该手机号已被其他用户绑定");
+                }
+            });
+        }
+
+        return userRepository.findById(userId)
+                .map(user -> {
+                    user.setPhone(phone);
+                    userRepository.save(user);
+                    log.info("用户 {} 绑定手机号: {}", userId, phone);
+                    return UserDTO.fromEntity(user);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
+    }
+
+    /**
+     * 绑定邮箱
+     */
+    @Transactional
+    public UserDTO bindEmail(Long userId, String email) {
+        // 检查邮箱是否已被其他用户使用
+        if (email != null && !email.isEmpty()) {
+            userRepository.findByEmail(email).ifPresent(existingUser -> {
+                if (!existingUser.getId().equals(userId)) {
+                    throw new IllegalArgumentException("该邮箱已被其他用户绑定");
+                }
+            });
+        }
+
+        return userRepository.findById(userId)
+                .map(user -> {
+                    user.setEmail(email);
+                    userRepository.save(user);
+                    log.info("用户 {} 绑定邮箱: {}", userId, email);
+                    return UserDTO.fromEntity(user);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
+    }
 }

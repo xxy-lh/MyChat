@@ -115,3 +115,68 @@
         u1_0.id=?
 2026-01-18T12:08:34.495+08:00 DEBUG 21484 --- [MyChat] [omcat-handler-2] com.example.mychat.user.UserService      : 用户 271119312040189952 状态更新为 ONLINE
 2026-01-18T12:08:34.511+08:00  INFO 21484 --- [MyChat] [omcat-handler-2] com.example.mychat.auth.AuthService      : 用户 Tele 登录成功
+2026-01-18T12:15:39.363+08:00 DEBUG 21484 --- [MyChat] [omcat-handler-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.enabled,
+        u1_0.handle,
+        u1_0.last_seen,
+        u1_0.location,
+        u1_0.name,
+        u1_0.password,
+        u1_0.phone,
+        u1_0.status,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.name=?
+2026-01-18T12:15:39.370+08:00 DEBUG 21484 --- [MyChat] [omcat-handler-5] c.e.m.i.s.JwtAuthenticationFilter        : 用户 271119312040189952 认证成功
+
+> Task :bootRun FAILED
+
+[Incubating] Problems report is available at: file:///D:/MyTelegram/MyChat/build/reports/problems/problems-report.html
+.\gradlew.bat : 
+所在位置 行:1 字符: 185
++ ... ontinue }; Start-Sleep -Second
+s 2; .\gradlew.bat bootRun 2>&1 | Ou
+t-F ...
++                                   
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpe
+cifi    ed: (:String) [], RemoteExce
+ption
+    + FullyQualifiedErrorId : Native
+Comm    andError
+ 
+FAILURE: Build failed with an except
+ion.
+
+* What went wrong:
+Execution failed for task ':bootRun'
+.
+> Process 'command 'D:\LiuHan Java\J
+ava\jdk-21\bin\java.exe'' finished w
+ith non-zero exit value -1
+
+* Try:
+> Run with --stacktrace option to ge
+t the stack trace.
+> Run with --info or --debug option 
+to get more log output.
+> Run with --scan to generate a Buil
+d Scan (powered by Develocity).
+> Get more help at https://help.grad
+le.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.2.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 11m 31s
+4 actionable tasks: 2 executed, 2 up-to-date

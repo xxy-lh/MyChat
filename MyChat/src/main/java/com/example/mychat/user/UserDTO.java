@@ -67,6 +67,11 @@ public class UserDTO {
     private String phone;
 
     /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
      * 从实体转换为 DTO
      */
     public static UserDTO fromEntity(User user) {
@@ -83,8 +88,23 @@ public class UserDTO {
                 .handle(user.getHandle())
                 .bio(user.getBio())
                 .location(user.getLocation())
-                .phone(maskPhone(user.getPhone()))
+                .phone(user.getPhone()) // 不脱敏，用于显示绑定状态
+                .email(maskEmail(user.getEmail()))
                 .build();
+    }
+
+    /**
+     * 邮箱脱敏
+     */
+    private static String maskEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return email;
+        }
+        String[] parts = email.split("@");
+        if (parts[0].length() <= 2) {
+            return email;
+        }
+        return parts[0].substring(0, 2) + "***@" + parts[1];
     }
 
     /**
@@ -121,4 +141,3 @@ public class UserDTO {
         return phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
     }
 }
-

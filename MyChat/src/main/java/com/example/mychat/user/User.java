@@ -32,10 +32,16 @@ public class User implements UserDetails {
     private Long id;
 
     /**
-     * 手机号（登录账号）
+     * 手机号（可选，用于绑定）
      */
-    @Column(name = "phone", unique = true, nullable = false, length = 20)
+    @Column(name = "phone", unique = true, length = 20)
     private String phone;
+
+    /**
+     * 邮箱（可选，用于绑定）
+     */
+    @Column(name = "email", unique = true, length = 100)
+    private String email;
 
     /**
      * 密码（BCrypt 加密）
@@ -144,7 +150,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.phone;
+        return this.name; // 使用用户名登录
     }
 
     @Override

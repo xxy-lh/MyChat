@@ -96,4 +96,48 @@ public class UserController {
         private String location;
         private String avatar;
     }
+
+    /**
+     * 绑定手机号
+     * 
+     * PUT /api/v1/users/me/phone
+     */
+    @PutMapping("/me/phone")
+    public Result<UserDTO> bindPhone(
+            @AuthenticationPrincipal User user,
+            @RequestBody BindPhoneRequest request) {
+
+        UserDTO updated = userService.bindPhone(user.getId(), request.getPhone());
+        return Result.success("手机号绑定成功", updated);
+    }
+
+    /**
+     * 绑定邮箱
+     * 
+     * PUT /api/v1/users/me/email
+     */
+    @PutMapping("/me/email")
+    public Result<UserDTO> bindEmail(
+            @AuthenticationPrincipal User user,
+            @RequestBody BindEmailRequest request) {
+
+        UserDTO updated = userService.bindEmail(user.getId(), request.getEmail());
+        return Result.success("邮箱绑定成功", updated);
+    }
+
+    /**
+     * 绑定手机号请求体
+     */
+    @lombok.Data
+    public static class BindPhoneRequest {
+        private String phone;
+    }
+
+    /**
+     * 绑定邮箱请求体
+     */
+    @lombok.Data
+    public static class BindEmailRequest {
+        private String email;
+    }
 }
