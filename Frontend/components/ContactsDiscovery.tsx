@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CONTACTS, GROUPS, CHATS } from '../constants';
+import AddContactModal from './AddContactModal';
 
 interface ContactsDiscoveryProps {
   onStartChat: (userId: string) => void;
 }
 
 const ContactsDiscovery: React.FC<ContactsDiscoveryProps> = ({ onStartChat }) => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleContactClick = (userId: string, isOnline: boolean) => {
     if (isOnline) {
@@ -15,6 +17,11 @@ const ContactsDiscovery: React.FC<ContactsDiscoveryProps> = ({ onStartChat }) =>
       const chatIdToUse = existingChat ? existingChat.id : '1'; // Default to 1 if no match for demo
       onStartChat(chatIdToUse);
     }
+  };
+
+  const handleContactAdded = () => {
+    // 刷新联系人列表（TODO: 从后端加载真实数据）
+    console.log('Contact added, refreshing list...');
   };
 
   return (
@@ -30,7 +37,10 @@ const ContactsDiscovery: React.FC<ContactsDiscoveryProps> = ({ onStartChat }) =>
             </label>
           </div>
           <div className="flex gap-3 w-full md:w-auto">
-            <button className="flex-1 md:flex-none h-10 px-4 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-zinc-200 text-white dark:text-black rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-colors">
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex-1 md:flex-none h-10 px-4 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-zinc-200 text-white dark:text-black rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-colors"
+            >
               <span className="material-symbols-outlined text-[20px]">person_add</span>
               <span>添加联系人</span>
             </button>
@@ -112,6 +122,13 @@ const ContactsDiscovery: React.FC<ContactsDiscoveryProps> = ({ onStartChat }) =>
           </section>
         </div>
       </div>
+
+      {/* 添加联系人模态框 */}
+      <AddContactModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onContactAdded={handleContactAdded}
+      />
     </div>
   );
 };

@@ -32,7 +32,7 @@ export const getCurrentUser = async (): Promise<User> => {
 
     // 缓存用户信息
     if (response.data) {
-        localStorage.setItem('currentUser', JSON.stringify(response.data));
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data));
     }
 
     return response.data;
@@ -46,7 +46,7 @@ export const updateProfile = async (data: UpdateProfileRequest): Promise<User> =
 
     // 更新缓存
     if (response.data) {
-        localStorage.setItem('currentUser', JSON.stringify(response.data));
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data));
     }
 
     return response.data;
@@ -84,7 +84,7 @@ export const bindPhone = async (phone: string): Promise<User> => {
 
     // 更新缓存
     if (response.data) {
-        localStorage.setItem('currentUser', JSON.stringify(response.data));
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data));
     }
 
     return response.data;
@@ -98,7 +98,7 @@ export const bindEmail = async (email: string): Promise<User> => {
 
     // 更新缓存
     if (response.data) {
-        localStorage.setItem('currentUser', JSON.stringify(response.data));
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data));
     }
 
     return response.data;
@@ -108,6 +108,6 @@ export const bindEmail = async (email: string): Promise<User> => {
  * 从缓存获取当前用户
  */
 export const getCachedUser = (): User | null => {
-    const cached = localStorage.getItem('currentUser');
+    const cached = sessionStorage.getItem('currentUser');
     return cached ? JSON.parse(cached) : null;
 };

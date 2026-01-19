@@ -4,7 +4,7 @@ import com.example.mychat.auth.dto.AuthResponse;
 import com.example.mychat.auth.dto.LoginRequest;
 import com.example.mychat.auth.dto.RegisterRequest;
 import com.example.mychat.infrastructure.security.JwtTokenProvider;
-import com.example.mychat.infrastructure.web.GlobalExceptionHandler.BusinessException;
+import com.example.mychat.infrastructure.exception.BusinessException;
 import com.example.mychat.user.User;
 import com.example.mychat.user.UserRepository;
 import com.example.mychat.user.UserService;

@@ -86,7 +86,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     try {
       if (isRegisterMode) {
         // 注册
-        await register(username.trim(), password);
+        await register(username.trim(), password, confirmPassword);
         // 注册成功 - 跳转到登录界面
         goToLogin('🎉 注册成功！请使用您的用户名登录');
       } else {

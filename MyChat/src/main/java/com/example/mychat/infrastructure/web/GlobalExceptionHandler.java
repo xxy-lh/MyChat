@@ -1,5 +1,6 @@
 package com.example.mychat.infrastructure.web;
 
+import com.example.mychat.infrastructure.exception.BusinessException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -140,27 +141,5 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Result.error("系统内部错误，请稍后重试"));
-    }
-
-    /**
-     * 业务异常类
-     */
-    public static class BusinessException extends RuntimeException {
-
-        private final HttpStatus status;
-
-        public BusinessException(String message) {
-            super(message);
-            this.status = HttpStatus.BAD_REQUEST;
-        }
-
-        public BusinessException(String message, HttpStatus status) {
-            super(message);
-            this.status = status;
-        }
-
-        public HttpStatus getStatus() {
-            return status;
-        }
     }
 }

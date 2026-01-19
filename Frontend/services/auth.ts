@@ -38,8 +38,8 @@ export const login = async (username: string, password: string): Promise<AuthRes
 
     // 保存 token
     if (response.data) {
-        localStorage.setItem('accessToken', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+        sessionStorage.setItem('accessToken', response.data.accessToken);
+        sessionStorage.setItem('refreshToken', response.data.refreshToken);
     }
 
     return response.data;
@@ -48,16 +48,17 @@ export const login = async (username: string, password: string): Promise<AuthRes
 /**
  * 用户注册
  */
-export const register = async (username: string, password: string): Promise<AuthResponse> => {
+export const register = async (username: string, password: string, confirmPassword: string): Promise<AuthResponse> => {
     const response: ApiResponse<AuthResponse> = await apiService.post('/auth/register', {
         username,
         password,
+        confirmPassword,
     });
 
     // 保存 token
     if (response.data) {
-        localStorage.setItem('accessToken', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+        sessionStorage.setItem('accessToken', response.data.accessToken);
+        sessionStorage.setItem('refreshToken', response.data.refreshToken);
     }
 
     return response.data;
@@ -71,9 +72,9 @@ export const logout = async (): Promise<void> => {
         await apiService.post('/auth/logout', {});
     } finally {
         // 清除本地存储
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('currentUser');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('currentUser');
     }
 };
 
@@ -81,14 +82,14 @@ export const logout = async (): Promise<void> => {
  * 刷新 Token
  */
 export const refreshToken = async (): Promise<AuthResponse> => {
-    const refreshToken = localStorage.getItem('refreshToken');
+    const refreshToken = sessionStorage.getItem('refreshToken');
     const response: ApiResponse<AuthResponse> = await apiService.post('/auth/refresh', {
         refreshToken,
     });
 
     if (response.data) {
-        localStorage.setItem('accessToken', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+        sessionStorage.setItem('accessToken', response.data.accessToken);
+        sessionStorage.setItem('refreshToken', response.data.refreshToken);
     }
 
     return response.data;

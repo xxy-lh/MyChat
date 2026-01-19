@@ -21,7 +21,7 @@ class ApiService {
      * 获取 Authorization header
      */
     private getAuthHeader(): Record<string, string> {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         return token ? { 'Authorization': `Bearer ${token}` } : {};
     }
 
@@ -56,8 +56,8 @@ class ApiService {
                     return this.request(endpoint, options);
                 } else {
                     // 刷新失败，清除登录状态
-                    localStorage.removeItem('accessToken');
-                    localStorage.removeItem('refreshToken');
+                    sessionStorage.removeItem('accessToken');
+                    sessionStorage.removeItem('refreshToken');
                     window.location.href = '/';
                     throw new Error('登录已过期，请重新登录');
                 }
@@ -115,7 +115,7 @@ class ApiService {
      */
     private async refreshToken(): Promise<boolean> {
         try {
-            const refreshToken = localStorage.getItem('refreshToken');
+            const refreshToken = sessionStorage.getItem('refreshToken');
             if (!refreshToken) return false;
 
             const response = await fetch(`${this.baseURL}/auth/refresh`, {
@@ -128,8 +128,8 @@ class ApiService {
 
             const data = await response.json();
             if (data.code === 200 && data.data?.accessToken) {
-                localStorage.setItem('accessToken', data.data.accessToken);
-                localStorage.setItem('refreshToken', data.data.refreshToken);
+                sessionStorage.setItem('accessToken', data.data.accessToken);
+                sessionStorage.setItem('refreshToken', data.data.refreshToken);
                 return true;
             }
             return false;

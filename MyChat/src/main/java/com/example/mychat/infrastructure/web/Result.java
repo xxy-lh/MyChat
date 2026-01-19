@@ -76,6 +76,17 @@ public class Result<T> {
     }
 
     /**
+     * 成功响应（仅带消息，无数据）
+     */
+    public static <T> Result<T> successMessage(String message) {
+        return Result.<T>builder()
+                .code(200)
+                .message(message)
+                .timestamp(System.currentTimeMillis())
+                .build();
+    }
+
+    /**
      * 失败响应
      */
     public static <T> Result<T> error(int code, String message) {
