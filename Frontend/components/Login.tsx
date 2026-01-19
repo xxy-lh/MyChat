@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
+import { login, register } from '../services/auth';
 
 interface LoginProps {
   onLogin: () => void;
 }
-
-const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -85,58 +84,30 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      const endpoint = isRegisterMode ? '/auth/register' : '/auth/login';
-      const body = isRegisterMode
-        ? {
-          username: username.trim(),
-          password,
-          confirmPassword
-        }
-        : {
-          username: username.trim(),
-          password
-        };
-
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.code === 200) {
-        if (isRegisterMode) {
-          // 注册成功 - 跳转到登录界面
-          goToLogin('🎉 注册成功！请使用您的用户名登录');
-        } else {
-          // 登录成功 - 保存 token 并进入主界面
-          if (result.data?.accessToken) {
-            localStorage.setItem('accessToken', result.data.accessToken);
-            localStorage.setItem('refreshToken', result.data.refreshToken || '');
-            localStorage.setItem('userId', result.data.user?.id?.toString() || '');
-            if (result.data.user) {
-              localStorage.setItem('user', JSON.stringify(result.data.user));
-            }
-          }
-          onLogin();
-        }
+      if (isRegisterMode) {
+        // 注册
+        await register(username.trim(), password);
+        // 注册成功 - 跳转到登录界面
+        goToLogin('🎉 注册成功！请使用您的用户名登录');
       } else {
-        // 登录/注册失败
-        const errorMessage = result.message || (isRegisterMode ? '注册失败，请重试' : '登录失败');
-
-        // 如果是"该用户名尚未注册"，提供引导
-        if (!isRegisterMode && errorMessage.includes('尚未注册')) {
-          setError('该用户名尚未注册');
-        } else {
-          setError(errorMessage);
+        // 登录
+        const result = await login(username.trim(), password);
+        // 登录成功 - 进入主界面
+        if (result.user) {
+          localStorage.setItem('userId', result.user.id);
         }
+        onLogin();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Login/Register error:', err);
-      setError('网络连接失败，请检查后端服务是否运行');
+      const errorMessage = err.message || (isRegisterMode ? '注册失败，请重试' : '登录失败');
+
+      // 如果是"该用户名尚未注册"，提供引导
+      if (!isRegisterMode && errorMessage.includes('尚未注册')) {
+        setError('该用户名尚未注册');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }

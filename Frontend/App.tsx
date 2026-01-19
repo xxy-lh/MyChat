@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
 import ChatInterface from './components/ChatInterface';
 import ContactsDiscovery from './components/ContactsDiscovery';
@@ -8,14 +8,72 @@ import SecurityPrivacy from './components/SecurityPrivacy';
 import Login from './components/Login';
 import { ViewState } from './types';
 import { CONTACTS } from './constants';
+import { getCurrentUser, User } from './services/user';
+import { logout as logoutUser } from './services/auth';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentView, setCurrentView] = useState<ViewState>('contacts');
   const [selectedChatId, setSelectedChatId] = useState<string>('1');
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
+
+  // 从 localStorage 加载主题偏好
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    setIsDarkMode(prefersDark);
+    document.documentElement.classList.toggle('dark', prefersDark);
+  }, []);
+
+  // 检查登录状态
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setIsLoggedIn(true);
+      fetchUserInfo();
+    }
+  }, []);
+
+  // 获取用户信息
+  const fetchUserInfo = async () => {
+    setIsLoadingUser(true);
+    try {
+      const user = await getCurrentUser();
+      setCurrentUser(user);
+    } catch (error) {
+      console.error('Failed to fetch user info:', error);
+      // Token失效，清除登录状态
+      handleLogout();
+    } finally {
+      setIsLoadingUser(false);
+    }
+  };
+
+  // 切换主题
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    document.documentElement.classList.toggle('dark', newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+  };
 
   const handleLogin = () => {
     setIsLoggedIn(true);
+    // 登录成功后获取用户信息
+    fetchUserInfo();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    setCurrentView('contacts');
   };
 
   const handleStartChat = (userId: string) => {
@@ -67,7 +125,7 @@ const App: React.FC = () => {
         // Mapping discovery button to SharedMedia for demo purposes
         return <SharedMedia />;
       case 'settings':
-        return <SettingsProfile />;
+        return <SettingsProfile currentUser={currentUser} onLogout={handleLogout} onUserUpdate={setCurrentUser} isDarkMode={isDarkMode} onToggleTheme={toggleTheme} />;
       case 'calls':
         return <CallsInterface />;
       case 'security':
@@ -84,7 +142,14 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen w-full bg-background-light dark:bg-background-dark overflow-hidden">
       {/* Global Navigation Sidebar */}
-      <Navigation currentView={currentView} onChangeView={setCurrentView} />
+      <Navigation
+        currentView={currentView}
+        onChangeView={setCurrentView}
+        isDarkMode={isDarkMode}
+        onToggleTheme={toggleTheme}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">

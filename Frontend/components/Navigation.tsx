@@ -1,13 +1,19 @@
 import React from 'react';
 import { ViewState } from '../types';
 import { CURRENT_USER } from '../constants';
+import ThemeToggle from './ThemeToggle';
+import { User } from '../services/user';
 
 interface NavigationProps {
   currentView: ViewState;
   onChangeView: (view: ViewState) => void;
+  isDarkMode: boolean;
+  onToggleTheme: () => void;
+  currentUser: User | null;
+  onLogout: () => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView }) => {
+const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView, isDarkMode, onToggleTheme, currentUser, onLogout }) => {
   const navItems: { id: ViewState; icon: string; label: string }[] = [
     { id: 'chat', icon: 'chat', label: '消息' },
     { id: 'contacts', icon: 'group', label: '联系人' },
@@ -17,13 +23,13 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView }) =>
   ];
 
   return (
-    <div className="w-64 flex-none border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-[#111722] flex flex-col justify-between p-4 hidden md:flex z-50">
+    <div className="w-64 flex-none border-r border-slate-200 dark:border-zinc-800 bg-surface-light dark:bg-zinc-950 flex flex-col justify-between p-4 hidden md:flex z-50">
       <div className="flex flex-col gap-6">
-        <div className="flex gap-3 items-center pb-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 shrink-0" style={{ backgroundImage: `url("${CURRENT_USER.avatar}")` }}></div>
+        <div className="flex gap-3 items-center pb-4 border-b border-slate-200 dark:border-zinc-800">
+          <div className="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 shrink-0" style={{ backgroundImage: `url("${currentUser?.avatar || CURRENT_USER.avatar}")` }}></div>
           <div className="flex flex-col overflow-hidden">
-            <h1 className="text-slate-900 dark:text-white text-base font-bold leading-normal truncate">{CURRENT_USER.name}</h1>
-            <p className="text-slate-500 dark:text-[#92a4c9] text-xs font-normal leading-normal">在线</p>
+            <h1 className="text-slate-900 dark:text-white text-base font-bold leading-normal truncate">{currentUser?.name || CURRENT_USER.name}</h1>
+            <p className="text-slate-500 dark:text-zinc-400 text-xs font-normal leading-normal">在线</p>
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -32,8 +38,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView }) =>
               key={item.id}
               onClick={() => onChangeView(item.id)}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full ${currentView === item.id
-                  ? 'bg-primary/10 dark:bg-[#232f48] text-primary dark:text-white'
-                  : 'text-slate-500 hover:bg-slate-100 dark:text-[#92a4c9] dark:hover:bg-[#232f48]'
+                ? 'bg-zinc-100 dark:bg-zinc-800 text-slate-900 dark:text-white'
+                : 'text-slate-500 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
                 }`}
             >
               <span className={`material-symbols-outlined text-xl ${currentView === item.id ? 'fill-1' : ''}`}>{item.icon}</span>
@@ -43,8 +49,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView }) =>
           <button
             onClick={() => onChangeView('calls')}
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full ${currentView === 'calls'
-                ? 'bg-primary/10 dark:bg-[#232f48] text-primary dark:text-white'
-                : 'text-slate-500 hover:bg-slate-100 dark:text-[#92a4c9] dark:hover:bg-[#232f48]'
+              ? 'bg-zinc-100 dark:bg-zinc-800 text-slate-900 dark:text-white'
+              : 'text-slate-500 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
               }`}
           >
             <span className={`material-symbols-outlined text-xl ${currentView === 'calls' ? 'fill-1' : ''}`}>call</span>
@@ -52,8 +58,18 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView }) =>
           </button>
         </div>
       </div>
-      <div className="px-3 py-2 text-xs text-slate-400 dark:text-slate-600 text-center">
-        v2.4.3
+      <div className="flex flex-col gap-2">
+        {/* 登出按钮 */}
+        <button
+          onClick={onLogout}
+          className="flex items-center gap-2 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-slate-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 text-sm font-medium"
+        >
+          <span className="material-symbols-outlined text-lg">logout</span>
+          <span>登出账号</span>
+        </button>
+        <div className="px-3 py-2 text-xs text-slate-400 dark:text-zinc-600 text-center">
+          v2.4.3
+        </div>
       </div>
     </div>
   );
