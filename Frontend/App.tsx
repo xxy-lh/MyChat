@@ -10,6 +10,7 @@ import { ViewState } from './types';
 import { CONTACTS } from './constants';
 import { getCurrentUser, User } from './services/user';
 import { logout as logoutUser } from './services/auth';
+import { getPendingRequests } from './services/friends';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,6 +19,7 @@ const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [pendingRequestCount, setPendingRequestCount] = useState(0);
 
   // 从 localStorage 加载主题偏好
   useEffect(() => {
@@ -50,6 +52,26 @@ const App: React.FC = () => {
       setIsLoadingUser(false);
     }
   };
+
+  // 获取待处理好友请求数量
+  const fetchPendingRequests = async () => {
+    try {
+      const requests = await getPendingRequests();
+      setPendingRequestCount(requests.length);
+    } catch (error) {
+      console.error('Failed to fetch pending requests:', error);
+    }
+  };
+
+  // 登录成功后获取待处理请求
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchPendingRequests();
+      // 每分钟刷新一次
+      const interval = setInterval(fetchPendingRequests, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [isLoggedIn]);
 
   // 切换主题
   const toggleTheme = () => {
@@ -149,6 +171,7 @@ const App: React.FC = () => {
         onToggleTheme={toggleTheme}
         currentUser={currentUser}
         onLogout={handleLogout}
+        pendingRequestCount={pendingRequestCount}
       />
 
       {/* Main Content Area */}

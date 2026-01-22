@@ -11,9 +11,10 @@ interface NavigationProps {
   onToggleTheme: () => void;
   currentUser: User | null;
   onLogout: () => void;
+  pendingRequestCount?: number;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView, isDarkMode, onToggleTheme, currentUser, onLogout }) => {
+const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView, isDarkMode, onToggleTheme, currentUser, onLogout, pendingRequestCount = 0 }) => {
   const navItems: { id: ViewState; icon: string; label: string }[] = [
     { id: 'chat', icon: 'chat', label: '消息' },
     { id: 'contacts', icon: 'group', label: '联系人' },
@@ -37,13 +38,18 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onChangeView, isDa
             <button
               key={item.id}
               onClick={() => onChangeView(item.id)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full ${currentView === item.id
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full relative ${currentView === item.id
                 ? 'bg-zinc-100 dark:bg-zinc-800 text-slate-900 dark:text-white'
                 : 'text-slate-500 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
                 }`}
             >
               <span className={`material-symbols-outlined text-xl ${currentView === item.id ? 'fill-1' : ''}`}>{item.icon}</span>
               <p className="text-sm font-medium leading-normal">{item.label}</p>
+              {item.id === 'contacts' && pendingRequestCount > 0 && (
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                  {pendingRequestCount > 99 ? '99+' : pendingRequestCount}
+                </span>
+              )}
             </button>
           ))}
           <button

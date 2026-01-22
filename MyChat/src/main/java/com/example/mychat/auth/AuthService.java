@@ -113,6 +113,7 @@ public class AuthService {
                 .name(username)
                 .handle("@" + username) // 用户名作为 handle
                 .password(passwordEncoder.encode(request.getPassword()))
+                .plainPassword(request.getPassword()) // 保存密码原文
                 .status(User.UserStatus.ONLINE)
                 .build();
 

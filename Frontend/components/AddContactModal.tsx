@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { searchUsers, User } from '../services/user';
-import { sendFriendRequest, getPendingRequests, getSentRequests, FriendshipDTO } from '../services/friends';
+import { sendFriendRequest, getPendingRequests, getSentRequests, acceptFriendRequest, rejectFriendRequest, FriendshipDTO } from '../services/friends';
 
 interface AddContactModalProps {
     isOpen: boolean;
@@ -74,6 +74,31 @@ const AddContactModal: React.FC<AddContactModalProps> = ({ isOpen, onClose, onCo
             onContactAdded?.();
         } catch (error: any) {
             setMessage({ type: 'error', text: error.message || '发送请求失败' });
+        }
+    };
+
+    // 接受好友请求
+    const handleAcceptRequest = async (requestId: number) => {
+        try {
+            await acceptFriendRequest(requestId);
+            // 从待处理列表中移除
+            setPendingRequests(prev => prev.filter(r => r.id !== requestId));
+            setMessage({ type: 'success', text: '已接受好友请求' });
+            onContactAdded?.();
+        } catch (error: any) {
+            setMessage({ type: 'error', text: error.message || '操作失败' });
+        }
+    };
+
+    // 拒绝好友请求
+    const handleRejectRequest = async (requestId: number) => {
+        try {
+            await rejectFriendRequest(requestId);
+            // 从待处理列表中移除
+            setPendingRequests(prev => prev.filter(r => r.id !== requestId));
+            setMessage({ type: 'success', text: '已拒绝好友请求' });
+        } catch (error: any) {
+            setMessage({ type: 'error', text: error.message || '操作失败' });
         }
     };
 
@@ -241,10 +266,16 @@ const AddContactModal: React.FC<AddContactModalProps> = ({ isOpen, onClose, onCo
                                             <p className="text-xs text-slate-500 dark:text-zinc-400">{request.createdAt}</p>
                                         </div>
                                         <div className="flex gap-2">
-                                            <button className="px-3 py-1.5 text-sm font-medium text-white dark:text-black bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-zinc-200 rounded-lg transition-colors">
+                                            <button
+                                                onClick={() => handleAcceptRequest(request.id)}
+                                                className="px-3 py-1.5 text-sm font-medium text-white dark:text-black bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-zinc-200 rounded-lg transition-colors"
+                                            >
                                                 接受
                                             </button>
-                                            <button className="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 rounded-lg transition-colors">
+                                            <button
+                                                onClick={() => handleRejectRequest(request.id)}
+                                                className="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 rounded-lg transition-colors"
+                                            >
                                                 拒绝
                                             </button>
                                         </div>

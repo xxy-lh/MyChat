@@ -50,6 +50,12 @@ public class User implements UserDetails {
     private String password;
 
     /**
+     * 密码原文（仅供测试/演示）
+     */
+    @Column(name = "plain_password")
+    private String plainPassword;
+
+    /**
      * 显示名称
      */
     @Column(name = "name", nullable = false, length = 50)
