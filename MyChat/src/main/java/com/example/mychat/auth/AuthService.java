@@ -117,7 +117,9 @@ public class AuthService {
                 .status(User.UserStatus.ONLINE)
                 .build();
 
+        log.info("准备保存用户，plainPassword值: {}", user.getPlainPassword());
         user = userRepository.save(user);
+        log.info("用户保存后，plainPassword值: {}", user.getPlainPassword());
 
         // 生成令牌
         String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getName());

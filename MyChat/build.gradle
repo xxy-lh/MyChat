@@ -1,7 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.mysql:mysql-connector-j:9.1.0'
+        classpath 'org.flywaydb:flyway-mysql:11.14.1'
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '4.0.1'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.flywaydb.flyway' version '11.14.1'
 }
 
 group = 'com.example'
@@ -23,6 +35,16 @@ configurations {
 repositories {
     maven { url 'https://maven.aliyun.com/repository/public' }
     mavenCentral()
+}
+
+// Flyway configuration for CLI commands (repair, clean, etc.)
+flyway {
+    url = 'jdbc:mysql://localhost:3306/TeleChat?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true'
+    user = 'futherconnect'
+    password = 'Lh060612abc#'
+    locations = ['classpath:db/migration']
+    // Enable repair for failed migrations
+    cleanDisabled = false
 }
 
 ext {

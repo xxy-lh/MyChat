@@ -142,7 +142,7 @@ const App: React.FC = () => {
       case 'chat':
         return <ChatInterface selectedChatId={selectedChatId} onSelectChat={setSelectedChatId} />;
       case 'contacts':
-        return <ContactsDiscovery onStartChat={handleStartChat} />;
+        return <ContactsDiscovery onStartChat={handleStartChat} onRefreshPendingCount={fetchPendingRequests} />;
       case 'media':
         // Mapping discovery button to SharedMedia for demo purposes
         return <SharedMedia />;
@@ -153,7 +153,7 @@ const App: React.FC = () => {
       case 'security':
         return <SecurityPrivacy />;
       default:
-        return <ContactsDiscovery onStartChat={handleStartChat} />;
+        return <ContactsDiscovery onStartChat={handleStartChat} onRefreshPendingCount={fetchPendingRequests} />;
     }
   };
 

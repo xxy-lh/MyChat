@@ -1,0 +1,200 @@
+﻿
+> Task :compileJava
+.\gradlew.bat : 注: D:\MyTelegram\MyChat\src\main\java\com\example\mychat\user\UserServic
+e.java使用或覆盖了已过时的 API。
+所在位置 行:1 字符: 1
++ .\gradlew.bat bootRun 2>&1 | Out-File -FilePath startup_log.txt -Enco ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (注: D:\MyTelegra...使用或覆盖了已过时的 API。:String)  
+   [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+
+> Task :processResources
+> Task :classes
+> Task :resolveMainClassName
+
+> Task :bootRun
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.1)
+
+2026-01-22T21:19:21.661+08:00  INFO 25244 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Starting MyChatApplication using Java 21.0.7 with PID 25244 (D:\MyTelegram\MyChat\build\classes\java\main started by Lenovo in D:\MyTelegram\MyChat)
+2026-01-22T21:19:21.665+08:00 DEBUG 25244 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-22T21:19:21.670+08:00  INFO 25244 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-01-22T21:19:21.725+08:00  INFO 25244 --- [MyChat] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-22T21:19:21.725+08:00  INFO 25244 --- [MyChat] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-22T21:19:22.743+08:00  INFO 25244 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-22T21:19:22.745+08:00  INFO 25244 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-22T21:19:22.946+08:00  INFO 25244 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 189 ms. Found 4 JPA repository interfaces.
+2026-01-22T21:19:23.003+08:00  INFO 25244 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-22T21:19:23.004+08:00  INFO 25244 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-22T21:19:23.037+08:00  INFO 25244 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.chat.repository.ChatSessionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-22T21:19:23.038+08:00  INFO 25244 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.chat.repository.MessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-22T21:19:23.038+08:00  INFO 25244 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.user.FriendshipRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-22T21:19:23.038+08:00  INFO 25244 --- [MyChat] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.mychat.user.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-22T21:19:23.039+08:00  INFO 25244 --- [MyChat] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 21 ms. Found 0 Redis repository interfaces.
+2026-01-22T21:19:23.957+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-01-22T21:19:23.979+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-22T21:19:23.979+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-22T21:19:24.071+08:00  INFO 25244 --- [MyChat] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2344 ms
+2026-01-22T21:19:24.477+08:00  INFO 25244 --- [MyChat] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-22T21:19:24.684+08:00  INFO 25244 --- [MyChat] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@ac36d27
+2026-01-22T21:19:24.688+08:00  INFO 25244 --- [MyChat] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-22T21:19:24.772+08:00  INFO 25244 --- [MyChat] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://localhost:3306/TeleChat?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true (MySQL 8.0)
+2026-01-22T21:19:24.881+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema `TeleChat`: 6
+2026-01-22T21:19:24.906+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.f.core.internal.command.DbMigrate      : Migrating schema `TeleChat` to version "7 - add plain password column"
+2026-01-22T21:19:25.018+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.f.core.internal.command.DbMigrate      : Successfully applied 1 migration to schema `TeleChat`, now at version v7 (execution time 00:00.068s)
+2026-01-22T21:19:25.145+08:00  INFO 25244 --- [MyChat] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-22T21:19:25.262+08:00  INFO 25244 --- [MyChat] [  restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-01-22T21:19:26.045+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-22T21:19:26.155+08:00  WARN 25244 --- [MyChat] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-22T21:19:26.179+08:00  INFO 25244 --- [MyChat] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/TeleChat?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: TeleChat/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-22T21:19:27.625+08:00  INFO 25244 --- [MyChat] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-22T21:19:27.635+08:00  INFO 25244 --- [MyChat] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-22T21:19:27.754+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-22T21:19:29.573+08:00 DEBUG 25244 --- [MyChat] [  restartedMain] c.e.m.i.s.JwtAuthenticationFilter        : Filter 'jwtAuthenticationFilter' configured for use
+2026-01-22T21:19:30.055+08:00  INFO 25244 --- [MyChat] [  restartedMain] c.e.m.chat.socket.MessageBrokerService   : 已订阅 Redis 消息主题: chat.topic
+2026-01-22T21:19:30.477+08:00  WARN 25244 --- [MyChat] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-22T21:19:30.517+08:00  INFO 25244 --- [MyChat] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userService
+2026-01-22T21:19:32.860+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-01-22T21:19:32.861+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@525a8aab]]
+2026-01-22T21:19:32.865+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-01-22T21:19:32.886+08:00  INFO 25244 --- [MyChat] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-01-22T21:19:33.621+08:00  INFO 25244 --- [MyChat] [  restartedMain] com.example.mychat.MyChatApplication     : Started MyChatApplication in 12.538 seconds (process running for 13.284)
+╔════════════════════════════════════════════╗
+║   Telegram Chat Backend Started!           ║
+║   Version: 1.0.0                           ║
+║   JDK: 21                                  ║
+║   Spring Boot: 4.0.1                       ║
+╚════════════════════════════════════════════╝
+
+2026-01-22T21:20:14.810+08:00  INFO 25244 --- [MyChat] [omcat-handler-0] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-22T21:20:14.810+08:00  INFO 25244 --- [MyChat] [omcat-handler-0] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-22T21:20:14.812+08:00  INFO 25244 --- [MyChat] [omcat-handler-0] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-01-22T21:20:15.217+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-0] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.handle,
+        u1_0.last_seen,
+        u1_0.location,
+        u1_0.name,
+        u1_0.password,
+        u1_0.phone,
+        u1_0.plain_password,
+        u1_0.status,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.name=?
+2026-01-22T21:20:15.288+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-0] c.e.m.i.s.JwtAuthenticationFilter        : 用户 272709715466084352 认证成功
+2026-01-22T21:20:15.342+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-0] org.hibernate.SQL                        : 
+    select
+        f1_0.id,
+        f1_0.created_at,
+        f1_0.friend_id,
+        f1_0.nickname,
+        f1_0.status,
+        f1_0.updated_at,
+        f1_0.user_id 
+    from
+        friendships f1_0 
+    where
+        f1_0.friend_id=? 
+        and f1_0.status='PENDING'
+2026-01-22T21:20:15.463+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.handle,
+        u1_0.last_seen,
+        u1_0.location,
+        u1_0.name,
+        u1_0.password,
+        u1_0.phone,
+        u1_0.plain_password,
+        u1_0.status,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.name=?
+2026-01-22T21:20:15.466+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-1] c.e.m.i.s.JwtAuthenticationFilter        : 用户 271569472696311808 认证成功
+2026-01-22T21:20:15.468+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-1] org.hibernate.SQL                        : 
+    select
+        f1_0.id,
+        f1_0.created_at,
+        f1_0.friend_id,
+        f1_0.nickname,
+        f1_0.status,
+        f1_0.updated_at,
+        f1_0.user_id 
+    from
+        friendships f1_0 
+    where
+        f1_0.friend_id=? 
+        and f1_0.status='PENDING'
+2026-01-22T21:20:15.477+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.handle,
+        u1_0.last_seen,
+        u1_0.location,
+        u1_0.name,
+        u1_0.password,
+        u1_0.phone,
+        u1_0.plain_password,
+        u1_0.status,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.name=?
+2026-01-22T21:20:15.480+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-2] c.e.m.i.s.JwtAuthenticationFilter        : 用户 271119312040189952 认证成功
+2026-01-22T21:20:15.483+08:00 DEBUG 25244 --- [MyChat] [omcat-handler-2] org.hibernate.SQL                        : 
+    select
+        f1_0.id,
+        f1_0.created_at,
+        f1_0.friend_id,
+        f1_0.nickname,
+        f1_0.status,
+        f1_0.updated_at,
+        f1_0.user_id 
+    from
+        friendships f1_0 
+    where
+        f1_0.friend_id=? 
+        and f1_0.status='PENDING'

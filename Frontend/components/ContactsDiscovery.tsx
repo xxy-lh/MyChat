@@ -1,27 +1,46 @@
-import React, { useState } from 'react';
-import { CONTACTS, GROUPS, CHATS } from '../constants';
+import React, { useState, useEffect, useCallback } from 'react';
+import { GROUPS, CHATS } from '../constants';
 import AddContactModal from './AddContactModal';
+import { getFriends } from '../services/friends';
+import { User } from '../services/user';
 
 interface ContactsDiscoveryProps {
   onStartChat: (userId: string) => void;
+  onRefreshPendingCount?: () => void;
 }
 
-const ContactsDiscovery: React.FC<ContactsDiscoveryProps> = ({ onStartChat }) => {
+const ContactsDiscovery: React.FC<ContactsDiscoveryProps> = ({ onStartChat, onRefreshPendingCount }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [friends, setFriends] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleContactClick = (userId: string, isOnline: boolean) => {
-    if (isOnline) {
-      // Find associated chat ID if exists, otherwise assume a direct user map for demo
-      // In a real app we would create a chat here
-      const existingChat = CHATS.find(c => c.userId === userId);
-      const chatIdToUse = existingChat ? existingChat.id : '1'; // Default to 1 if no match for demo
-      onStartChat(chatIdToUse);
+  // 加载好友列表
+  const loadFriends = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const friendList = await getFriends();
+      setFriends(friendList);
+    } catch (error) {
+      console.error('Failed to load friends:', error);
+    } finally {
+      setIsLoading(false);
     }
+  }, []);
+
+  // 组件挂载时加载好友列表
+  useEffect(() => {
+    loadFriends();
+  }, [loadFriends]);
+
+  const handleContactClick = (userId: string) => {
+    // 直接使用 userId 开始聊天
+    onStartChat(userId);
   };
 
   const handleContactAdded = () => {
-    // 刷新联系人列表（TODO: 从后端加载真实数据）
-    console.log('Contact added, refreshing list...');
+    // 刷新好友列表和待处理请求数量
+    loadFriends();
+    onRefreshPendingCount?.();
   };
 
   return (
@@ -52,39 +71,47 @@ const ContactsDiscovery: React.FC<ContactsDiscoveryProps> = ({ onStartChat }) =>
           <section className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">联系人</h2>
+              <span className="text-sm text-slate-500 dark:text-zinc-400">{friends.length} 位好友</span>
             </div>
             <div className="flex flex-col gap-2">
-              {CONTACTS.map((contact) => (
-                <div
-                  key={contact.id}
-                  onClick={() => handleContactClick(contact.id, contact.status === 'online')}
-                  className={`group bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 p-3 rounded-xl border border-slate-200 dark:border-zinc-800 transition-all flex items-center gap-4 ${contact.status === 'online' ? 'cursor-pointer' : 'cursor-default'}`}
-                >
-                  <div className="relative">
-                    <div className="h-12 w-12 rounded-full bg-cover bg-center" style={{ backgroundImage: `url("${contact.avatar}")` }}></div>
-                  </div>
-                  <div className="flex flex-col">
-                    <h3 className="text-base font-semibold text-slate-900 dark:text-white leading-tight">{contact.name}</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 font-normal">
-                      {contact.bio || '暂无介绍'}
-                    </p>
-                  </div>
-
-                  {/* Status Indicator at the far right */}
-                  <div className="ml-auto flex items-center gap-2 px-3">
-                    {contact.status === 'online' ? (
-                      <div className="flex items-center gap-2 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20 group-hover:bg-green-500 group-hover:text-white transition-colors">
-                        <div className="h-2 w-2 rounded-full bg-green-500 group-hover:bg-white animate-pulse"></div>
-                        <span className="text-xs font-bold text-green-600 dark:text-green-400 group-hover:text-white">发消息</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">{contact.lastSeen}</span>
-                      </div>
-                    )}
-                  </div>
+              {isLoading ? (
+                <div className="text-center py-10 text-slate-400 dark:text-zinc-500">
+                  <span className="material-symbols-outlined text-4xl mb-2 animate-spin">progress_activity</span>
+                  <p>加载中...</p>
                 </div>
-              ))}
+              ) : friends.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 dark:text-zinc-500">
+                  <span className="material-symbols-outlined text-4xl mb-2">group</span>
+                  <p>暂无好友，点击"添加联系人"开始添加</p>
+                </div>
+              ) : (
+                friends.map((friend) => (
+                  <div
+                    key={friend.id}
+                    onClick={() => handleContactClick(friend.id)}
+                    className="group bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 p-3 rounded-xl border border-slate-200 dark:border-zinc-800 transition-all flex items-center gap-4 cursor-pointer"
+                  >
+                    <div className="relative">
+                      <div className="h-12 w-12 rounded-full bg-cover bg-center bg-slate-200 dark:bg-zinc-700" style={{ backgroundImage: `url("${friend.avatar || 'https://ui-avatars.com/api/?name=' + friend.name}")` }}></div>
+                      {friend.status === 'online' && (
+                        <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-zinc-900"></div>
+                      )}
+                    </div>
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-slate-900 dark:text-white leading-tight truncate">{friend.name}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 font-normal truncate">
+                        {friend.handle || friend.bio || '暂无介绍'}
+                      </p>
+                    </div>
+                    <div className="ml-auto flex items-center gap-2 px-3">
+                      <div className="flex items-center gap-2 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full group-hover:bg-primary group-hover:text-white transition-colors">
+                        <span className="material-symbols-outlined text-sm">chat</span>
+                        <span className="text-xs font-bold">发消息</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </section>
           <hr className="border-slate-200 dark:border-zinc-800" />

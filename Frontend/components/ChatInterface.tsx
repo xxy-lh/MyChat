@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CHATS, CONTACTS } from '../constants';
+import { getFriends } from '../services/friends';
+import { User } from '../services/user';
 
 interface ChatInterfaceProps {
   selectedChatId: string;
@@ -22,21 +24,45 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChatId, onSelectC
   const [showAttachments, setShowAttachments] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [friends, setFriends] = useState<User[]>([]);
 
-  const activeChat = CHATS.find(c => c.id === selectedChatId) || CHATS[0] || {
-    id: 'system',
-    userId: 'system',
-    lastMessage: '',
-    lastMessageTime: '',
-    unreadCount: 0
-  };
-  const activeContact = !activeChat.isGroup
-    ? CONTACTS.find(c => c.id === activeChat.userId)
+  // 加载好友列表
+  const loadFriends = useCallback(async () => {
+    try {
+      const friendList = await getFriends();
+      setFriends(friendList);
+    } catch (error) {
+      console.error('Failed to load friends:', error);
+    }
+  }, []);
+
+  // 组件挂载时加载好友列表
+  useEffect(() => {
+    loadFriends();
+  }, [loadFriends]);
+
+  // 查找选中的好友或使用静态聊天数据
+  const activeFriend = friends.find(f => f.id === selectedChatId);
+  const activeChat = !activeFriend
+    ? (CHATS.find(c => c.id === selectedChatId) || CHATS[0] || {
+      id: 'system',
+      userId: 'system',
+      lastMessage: '',
+      lastMessageTime: '',
+      unreadCount: 0
+    })
     : null;
 
-  const activeName = activeContact ? activeContact.name : (activeChat.groupName || '未知');
-  const activeAvatar = activeContact ? activeContact.avatar : (activeChat.isGroup ? `https://ui-avatars.com/api/?name=${activeChat.groupName}&background=random` : '');
-  const isOnline = activeContact?.status === 'online';
+  // 如果选中的是好友，使用好友信息；否则使用传统的 CONTACTS
+  const activeContact = activeFriend
+    ? activeFriend
+    : (activeChat && !activeChat.isGroup ? CONTACTS.find(c => c.id === activeChat.userId) : null);
+
+  const activeName = activeFriend ? activeFriend.name : (activeContact ? activeContact.name : (activeChat?.groupName || '未知'));
+  const activeAvatar = activeFriend
+    ? (activeFriend.avatar || `https://ui-avatars.com/api/?name=${activeFriend.name}`)
+    : (activeContact ? activeContact.avatar : (activeChat?.isGroup ? `https://ui-avatars.com/api/?name=${activeChat?.groupName}&background=random` : ''));
+  const isOnline = activeFriend ? activeFriend.status === 'ONLINE' : activeContact?.status === 'online';
 
   // Filter chats based on active tab AND search query
   const filteredChats = CHATS.filter(chat => {
@@ -173,41 +199,44 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChatId, onSelectC
           </div>
         </div>
         <div className="flex-1 overflow-y-auto py-2">
-          {filteredChats.length === 0 ? (
+          {friends.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-slate-400 dark:text-zinc-500">
-              <span className="material-symbols-outlined text-3xl mb-2">chat_bubble_outline</span>
-              <p className="text-sm">未找到相关消息</p>
+              <span className="material-symbols-outlined text-3xl mb-2">group</span>
+              <p className="text-sm">暂无好友</p>
+              <p className="text-xs mt-1">添加好友后将在这里显示</p>
             </div>
           ) : (
-            filteredChats.map((chat) => {
-              const contact = !chat.isGroup ? CONTACTS.find(c => c.id === chat.userId) : null;
-              const avatar = contact ? contact.avatar : (chat.isGroup ? `https://ui-avatars.com/api/?name=${chat.groupName}&background=random` : '');
-              const name = contact ? contact.name : chat.groupName;
-              const isSelected = chat.id === selectedChatId;
-
-              return (
-                <div
-                  key={chat.id}
-                  onClick={() => onSelectChat(chat.id)}
-                  className={`flex items-center gap-3 px-5 py-3 cursor-pointer ${isSelected ? 'bg-slate-100 dark:bg-zinc-800 border-l-[3px] border-slate-900 dark:border-white' : 'hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors border-l-[3px] border-transparent'}`}
-                >
-                  <div className="relative shrink-0">
-                    <div className="bg-center bg-no-repeat bg-cover rounded-full size-12" style={{ backgroundImage: `url("${avatar}")` }}></div>
-                    {contact?.status === 'online' && <div className="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>}
-                  </div>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-0.5">
-                      <p className="text-slate-900 dark:text-white text-sm font-bold truncate">{name}</p>
-                      <p className="text-slate-400 dark:text-zinc-500 text-xs">{chat.lastMessageTime}</p>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className={`${isSelected ? 'text-slate-600 dark:text-zinc-300' : 'text-slate-500 dark:text-zinc-400'} text-sm truncate`}>{chat.lastMessage}</p>
-                      {chat.unreadCount > 0 && <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-slate-900 dark:bg-white text-white dark:text-black text-[10px] font-bold rounded-full ml-2">{chat.unreadCount}</span>}
-                    </div>
-                  </div>
-                </div>
+            friends
+              .filter(friend =>
+                friend.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (friend.handle || '').toLowerCase().includes(searchQuery.toLowerCase())
               )
-            })
+              .map((friend) => {
+                const avatar = friend.avatar || `https://ui-avatars.com/api/?name=${friend.name}`;
+                const isSelected = friend.id === selectedChatId;
+
+                return (
+                  <div
+                    key={friend.id}
+                    onClick={() => onSelectChat(friend.id)}
+                    className={`flex items-center gap-3 px-5 py-3 cursor-pointer ${isSelected ? 'bg-slate-100 dark:bg-zinc-800 border-l-[3px] border-slate-900 dark:border-white' : 'hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors border-l-[3px] border-transparent'}`}
+                  >
+                    <div className="relative shrink-0">
+                      <div className="bg-center bg-no-repeat bg-cover rounded-full size-12 bg-slate-200 dark:bg-zinc-700" style={{ backgroundImage: `url("${avatar}")` }}></div>
+                      {friend.status === 'ONLINE' && <div className="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>}
+                    </div>
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <p className="text-slate-900 dark:text-white text-sm font-bold truncate">{friend.name}</p>
+                        <p className="text-slate-400 dark:text-zinc-500 text-xs">{friend.status === 'ONLINE' ? '在线' : ''}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className={`${isSelected ? 'text-slate-600 dark:text-zinc-300' : 'text-slate-500 dark:text-zinc-400'} text-sm truncate`}>{friend.handle || '点击开始聊天'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
           )}
         </div>
       </aside>
@@ -252,12 +281,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChatId, onSelectC
             <div className="flex flex-col gap-1">
               <div className="bg-white dark:bg-zinc-800 p-3 rounded-xl rounded-bl-sm text-slate-900 dark:text-white shadow-sm">
                 <p className="text-sm leading-relaxed">
-                  {activeChat.isGroup
+                  {activeChat?.isGroup
                     ? `欢迎加入 ${activeName} 群组！让我们开始讨论吧。`
                     : `你好！这是与 ${activeName} 的聊天记录。`}
                 </p>
               </div>
-              <span className="text-slate-400 dark:text-zinc-500 text-[10px] pl-1">{activeChat.lastMessageTime}</span>
+              <span className="text-slate-400 dark:text-zinc-500 text-[10px] pl-1">{activeChat?.lastMessageTime || '刚刚'}</span>
             </div>
           </div>
 
