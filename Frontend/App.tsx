@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navigation from './components/Navigation';
 import ChatInterface from './components/ChatInterface';
 import ContactsDiscovery from './components/ContactsDiscovery';
@@ -11,6 +11,7 @@ import { CONTACTS } from './constants';
 import { getCurrentUser, User } from './services/user';
 import { logout as logoutUser } from './services/auth';
 import { getPendingRequests } from './services/friends';
+import { wsService, PresenceMessage, UnreadCount, ChatMessage } from './services/websocket';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -20,6 +21,9 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [pendingRequestCount, setPendingRequestCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState<Record<string, number>>({});
+  const [friendsOnlineStatus, setFriendsOnlineStatus] = useState<Record<string, boolean>>({});
+  const [wsConnected, setWsConnected] = useState(false);
 
   // 从 localStorage 加载主题偏好
   useEffect(() => {
@@ -63,14 +67,72 @@ const App: React.FC = () => {
     }
   };
 
-  // 登录成功后获取待处理请求
+  // 登录成功后获取待处理请求和初始化 WebSocket
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && currentUser) {
       fetchPendingRequests();
       // 每分钟刷新一次
       const interval = setInterval(fetchPendingRequests, 60000);
-      return () => clearInterval(interval);
+
+      // 初始化 WebSocket 连接
+      const token = sessionStorage.getItem('accessToken');
+      if (token && currentUser.id) {
+        wsService.connect(currentUser.id, token);
+      }
+
+      return () => {
+        clearInterval(interval);
+      };
     }
+  }, [isLoggedIn, currentUser]);
+
+  // WebSocket 事件订阅
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    // 订阅连接状态
+    const unsubConnection = wsService.onConnection((connected) => {
+      setWsConnected(connected);
+      console.log('[App] WebSocket 连接状态:', connected ? '已连接' : '已断开');
+    });
+
+    // 订阅在线状态变更
+    const unsubPresence = wsService.onPresence((presence: PresenceMessage) => {
+      setFriendsOnlineStatus(prev => ({
+        ...prev,
+        [presence.userId]: presence.status === 'ONLINE'
+      }));
+      console.log('[App] 好友状态变更:', presence.userId, presence.status);
+    });
+
+    // 订阅未读消息更新
+    const unsubUnread = wsService.onUnread((unread: UnreadCount) => {
+      setUnreadMessages(prev => ({
+        ...prev,
+        [unread.senderId]: unread.count
+      }));
+    });
+
+    // 订阅消息用于更新未读计数
+    const unsubMessage = wsService.onMessage((message: ChatMessage) => {
+      // 如果消息不是自己发的，增加未读计数
+      const currentUserStr = sessionStorage.getItem('currentUser');
+      const currentUserId = currentUserStr ? JSON.parse(currentUserStr).id : null;
+
+      if (message.senderId !== currentUserId) {
+        setUnreadMessages(prev => ({
+          ...prev,
+          [message.senderId]: (prev[message.senderId] || 0) + 1
+        }));
+      }
+    });
+
+    return () => {
+      unsubConnection();
+      unsubPresence();
+      unsubUnread();
+      unsubMessage();
+    };
   }, [isLoggedIn]);
 
   // 切换主题
@@ -89,6 +151,8 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      // 断开 WebSocket 连接
+      wsService.disconnect();
       await logoutUser();
     } catch (error) {
       console.error('Logout error:', error);
@@ -96,11 +160,21 @@ const App: React.FC = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
     setCurrentView('contacts');
+    setUnreadMessages({});
+    setFriendsOnlineStatus({});
   };
 
   const handleStartChat = (userId: string) => {
     setSelectedChatId(userId);
     setCurrentView('chat');
+    // 清除该用户的未读消息
+    setUnreadMessages(prev => {
+      const updated = { ...prev };
+      delete updated[userId];
+      return updated;
+    });
+    // 发送已读回执
+    wsService.sendReadReceipt(userId);
   };
 
   const CallsInterface = () => (
@@ -140,7 +214,21 @@ const App: React.FC = () => {
   const renderView = () => {
     switch (currentView) {
       case 'chat':
-        return <ChatInterface selectedChatId={selectedChatId} onSelectChat={setSelectedChatId} />;
+        return <ChatInterface
+          selectedChatId={selectedChatId}
+          onSelectChat={(id) => {
+            setSelectedChatId(id);
+            // 清除该用户的未读消息
+            setUnreadMessages(prev => {
+              const updated = { ...prev };
+              delete updated[id];
+              return updated;
+            });
+            wsService.sendReadReceipt(id);
+          }}
+          unreadMessages={unreadMessages}
+          friendsOnlineStatus={friendsOnlineStatus}
+        />;
       case 'contacts':
         return <ContactsDiscovery onStartChat={handleStartChat} onRefreshPendingCount={fetchPendingRequests} />;
       case 'media':

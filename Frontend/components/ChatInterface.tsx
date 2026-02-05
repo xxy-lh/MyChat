@@ -2,21 +2,31 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CHATS, CONTACTS } from '../constants';
 import { getFriends } from '../services/friends';
 import { User } from '../services/user';
+import { wsService, ChatMessage } from '../services/websocket';
 
 interface ChatInterfaceProps {
   selectedChatId: string;
   onSelectChat: (id: string) => void;
+  unreadMessages?: Record<string, number>;
+  friendsOnlineStatus?: Record<string, boolean>;
 }
 
 interface LocalMessage {
+  id?: string;
   text: string;
   time: string;
   isMe: boolean;
+  senderId?: string;
 }
 
 const EMOJIS = ['😀', '😂', '🥰', '👍', '❤️', '🎉', '🔥', '🤔', '👀', '👋'];
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChatId, onSelectChat }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({
+  selectedChatId,
+  onSelectChat,
+  unreadMessages = {},
+  friendsOnlineStatus = {}
+}) => {
   const [inputText, setInputText] = useState('');
   const [localMessages, setLocalMessages] = useState<Record<string, LocalMessage[]>>({});
   const [activeTab, setActiveTab] = useState<'all' | 'groups' | 'channels'>('all');
@@ -40,6 +50,37 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChatId, onSelectC
   useEffect(() => {
     loadFriends();
   }, [loadFriends]);
+
+  // 订阅 WebSocket 消息
+  useEffect(() => {
+    // 获取当前用户 ID
+    const currentUserStr = sessionStorage.getItem('currentUser');
+    const currentUserId = currentUserStr ? JSON.parse(currentUserStr).id : null;
+
+    if (!currentUserId) return;
+
+    // 订阅消息
+    const unsubscribe = wsService.onMessage((message: ChatMessage) => {
+      const formattedMsg: LocalMessage = {
+        id: message.id,
+        text: message.text,
+        time: new Date(message.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+        isMe: message.senderId === currentUserId,
+        senderId: message.senderId,
+      };
+
+      // 添加到对应的聊天窗口
+      const chatId = message.senderId === currentUserId ? selectedChatId : message.senderId;
+      setLocalMessages(prev => ({
+        ...prev,
+        [chatId]: [...(prev[chatId] || []), formattedMsg]
+      }));
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [selectedChatId]);
 
   // 查找选中的好友或使用静态聊天数据
   const activeFriend = friends.find(f => f.id === selectedChatId);
@@ -92,33 +133,33 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChatId, onSelectC
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
 
+    // 获取当前用户 ID
+    const currentUserStr = sessionStorage.getItem('currentUser');
+    const currentUserId = currentUserStr ? JSON.parse(currentUserStr).id : null;
+
     const newMessage: LocalMessage = {
       text: inputText,
       time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-      isMe: true
+      isMe: true,
+      senderId: currentUserId,
     };
 
+    // 本地立即显示消息（乐观更新）
     setLocalMessages(prev => ({
       ...prev,
       [selectedChatId]: [...(prev[selectedChatId] || []), newMessage]
     }));
 
+    // 通过 WebSocket 发送消息
+    if (wsService.isConnected()) {
+      wsService.sendMessage(selectedChatId, inputText, 'text');
+    } else {
+      console.warn('[Chat] WebSocket 未连接，消息将在重连后发送');
+    }
+
     setInputText('');
     setShowEmojiPicker(false);
     setShowAttachments(false);
-
-    // Simulate reply
-    setTimeout(() => {
-      const reply: LocalMessage = {
-        text: `收到！这是来自 ${activeName} 的自动回复。`,
-        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-        isMe: false
-      };
-      setLocalMessages(prev => ({
-        ...prev,
-        [selectedChatId]: [...(prev[selectedChatId] || []), reply]
-      }));
-    }, 1500);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -214,6 +255,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChatId, onSelectC
               .map((friend) => {
                 const avatar = friend.avatar || `https://ui-avatars.com/api/?name=${friend.name}`;
                 const isSelected = friend.id === selectedChatId;
+                // 优先使用实时在线状态，其次使用好友原始状态
+                const isOnline = friendsOnlineStatus[friend.id] !== undefined
+                  ? friendsOnlineStatus[friend.id]
+                  : friend.status === 'ONLINE';
+                const unreadCount = unreadMessages[friend.id] || 0;
 
                 return (
                   <div
@@ -223,12 +269,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChatId, onSelectC
                   >
                     <div className="relative shrink-0">
                       <div className="bg-center bg-no-repeat bg-cover rounded-full size-12 bg-slate-200 dark:bg-zinc-700" style={{ backgroundImage: `url("${avatar}")` }}></div>
-                      {friend.status === 'ONLINE' && <div className="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>}
+                      {isOnline && <div className="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>}
                     </div>
                     <div className="flex flex-col flex-1 min-w-0">
                       <div className="flex justify-between items-center mb-0.5">
                         <p className="text-slate-900 dark:text-white text-sm font-bold truncate">{friend.name}</p>
-                        <p className="text-slate-400 dark:text-zinc-500 text-xs">{friend.status === 'ONLINE' ? '在线' : ''}</p>
+                        <div className="flex items-center gap-2">
+                          {unreadCount > 0 && (
+                            <span className="bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
+                              {unreadCount > 99 ? '99+' : unreadCount}
+                            </span>
+                          )}
+                          <p className="text-slate-400 dark:text-zinc-500 text-xs">{isOnline ? '在线' : ''}</p>
+                        </div>
                       </div>
                       <div className="flex justify-between items-center">
                         <p className={`${isSelected ? 'text-slate-600 dark:text-zinc-300' : 'text-slate-500 dark:text-zinc-400'} text-sm truncate`}>{friend.handle || '点击开始聊天'}</p>

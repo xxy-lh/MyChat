@@ -9,6 +9,7 @@ import com.example.mychat.user.User;
 import com.example.mychat.user.UserRepository;
 import com.example.mychat.user.UserService;
 import com.example.mychat.user.UserDTO;
+import com.example.mychat.user.PresenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +32,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -39,6 +40,25 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final PresenceService presenceService;
+
+    // 使用构造函数注入，对 PresenceService 使用 @Lazy 避免循环依赖
+    public AuthService(
+            AuthenticationManager authenticationManager,
+            JwtTokenProvider jwtTokenProvider,
+            UserService userService,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            RedisTemplate<String, Object> redisTemplate,
+            @Lazy PresenceService presenceService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userService = userService;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.redisTemplate = redisTemplate;
+        this.presenceService = presenceService;
+    }
 
     // Redis 键前缀
     private static final String TOKEN_WHITELIST_KEY = "user:token:";
@@ -73,8 +93,8 @@ public class AuthService {
             // 将 Token 存入 Redis 白名单（用于后续踢下线功能）
             saveTokenToWhitelist(userId, accessToken);
 
-            // 更新在线状态
-            userService.updateOnlineStatus(userId, User.UserStatus.ONLINE);
+            // 更新在线状态并广播给好友
+            presenceService.userOnline(userId);
 
             log.info("用户 {} 登录成功", name);
 
@@ -181,8 +201,8 @@ public class AuthService {
         String key = TOKEN_WHITELIST_KEY + userId;
         redisTemplate.delete(key);
 
-        // 更新离线状态
-        userService.updateOnlineStatus(userId, User.UserStatus.OFFLINE);
+        // 更新离线状态并广播给好友
+        presenceService.userOffline(userId);
 
         log.info("用户 {} 已登出", userId);
     }
